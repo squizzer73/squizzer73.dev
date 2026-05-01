@@ -1,0 +1,307 @@
+/* squizzer73.dev — card previews + tiles */
+
+/* ============= CARD TILE ============= */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.card-tile {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  transition: border-color 140ms, transform 140ms;
+  text-decoration: none;
+  color: inherit;
+  min-height: 320px;
+}
+.card-tile:hover {
+  border-color: var(--border-2);
+}
+.card-tile:hover .card-tile-name { color: var(--accent); }
+
+.card-tile-preview {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #0a0e14;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  overflow: hidden;
+}
+.card-tile-preview-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-tile-version {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+.card-tile-body {
+  padding: 16px 16px 12px;
+  flex: 1;
+}
+.card-tile-name {
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 4px;
+  transition: color 120ms;
+}
+.card-tile-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.card-tile-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+.card-tile-filename {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.card-tile-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-muted);
+}
+
+.card-tile-empty {
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  border-color: var(--border-2);
+  background: transparent;
+  cursor: default;
+  min-height: 320px;
+}
+.card-tile-empty-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  padding: 20px;
+  text-align: center;
+}
+.card-tile-empty-icon {
+  color: var(--text-faint);
+}
+.card-tile-empty-label {
+  font-size: 13px;
+}
+
+/* ============= CALENDAR CARD PREVIEW ============= */
+.cal-preview {
+  width: 100%;
+  height: 100%;
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  font-size: 9px;
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+.cal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  font-size: 10px;
+}
+.cal-month { font-weight: 500; }
+.cal-nav {
+  display: flex;
+  gap: 8px;
+  color: var(--text-muted);
+}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  flex: 1;
+  font-size: 9px;
+}
+.cal-dow {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 8px;
+  padding: 2px 0;
+}
+.cal-day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-size: 8px;
+  aspect-ratio: 1;
+}
+.cal-num { line-height: 1; }
+.cal-today {
+  background: var(--accent);
+  color: #0a0e14;
+  font-weight: 500;
+}
+.cal-dot {
+  position: absolute;
+  bottom: 2px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+}
+.cal-today .cal-dot { display: none; }
+
+/* Calendar in hero (detail page) — bigger, with event list */
+.cal-hero {
+  font-size: 14px;
+  padding: 20px;
+}
+.cal-hero .cal-head { font-size: 16px; margin-bottom: 14px; }
+.cal-hero .cal-grid { gap: 4px; font-size: 13px; }
+.cal-hero .cal-dow { font-size: 11px; padding: 6px 0; }
+.cal-hero .cal-day { font-size: 13px; }
+.cal-hero .cal-num { font-size: 13px; }
+.cal-hero .cal-dot { width: 5px; height: 5px; bottom: 4px; }
+.cal-hero .cal-events {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cal-event {
+  display: grid;
+  grid-template-columns: 8px 50px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  font-size: 13px;
+}
+.cal-event-dot { width: 8px; height: 8px; border-radius: 50%; }
+.cal-event-time { color: var(--text-muted); font-size: 12px; }
+.cal-event-title { color: var(--text); }
+.cal-event-cal { font-size: 11px; }
+
+/* ============= WORD CLOCK CARD PREVIEW ============= */
+.wc-preview {
+  width: 100%;
+  height: 100%;
+  background: #0a0e14;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  padding: 14px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.wc-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-family: var(--font-mono);
+}
+.wc-row {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.wc-letter {
+  font-size: 8px;
+  letter-spacing: 0.05em;
+  color: #2a3140;
+  width: 9px;
+  text-align: center;
+  transition: color 600ms;
+}
+.wc-lit { color: var(--text); }
+
+.wc-hero {
+  padding: 36px 24px;
+}
+.wc-hero .wc-row { gap: 9px; }
+.wc-hero .wc-letter { font-size: 16px; width: 16px; }
+.wc-hero .wc-lit { color: var(--accent); }
+
+/* ============= HEAT DEMAND PREVIEW ============= */
+.hd-preview {
+  width: 100%;
+  height: 100%;
+  background: #0d1117;
+  border: 1px solid #21262d;
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  font-size: 9px;
+}
+.hd-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  font-size: 10px;
+}
+.hd-title { font-weight: 500; }
+.hd-status { color: var(--text-muted); font-size: 9px; }
+.hd-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  justify-content: center;
+}
+.hd-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 32px;
+  gap: 8px;
+  align-items: center;
+  font-size: 9px;
+}
+.hd-room { color: var(--text); }
+.hd-bar {
+  height: 4px;
+  background: #21262d;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.hd-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #388bfd 0%, #f78166 100%);
+  border-radius: 999px;
+  transition: width 800ms;
+}
+.hd-temp { color: var(--text-muted); font-size: 9px; }
+
+.hd-hero {
+  padding: 20px 24px;
+  font-size: 14px;
+}
+.hd-hero .hd-head { font-size: 16px; margin-bottom: 16px; }
+.hd-hero .hd-status { font-size: 13px; }
+.hd-hero .hd-row {
+  grid-template-columns: 100px 1fr 60px;
+  gap: 16px;
+  font-size: 14px;
+}
+.hd-hero .hd-bar { height: 8px; }
+.hd-hero .hd-temp { font-size: 13px; }
