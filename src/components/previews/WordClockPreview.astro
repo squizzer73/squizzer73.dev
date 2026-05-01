@@ -1,0 +1,112 @@
+---
+interface Props {
+  size?: 'tile' | 'hero';
+}
+const { size = 'tile' } = Astro.props;
+const isHero = size === 'hero';
+
+const GRID = [
+  'ITLISASTIME',
+  'ACQUARTERDC',
+  'TWENTYFIVEX',
+  'HALFSTENFTO',
+  'PASTERUNINE',
+  'ONESIXTHREE',
+  'FOURFIVETWO',
+  'EIGHTELEVEN',
+  'SEVENTWELVE',
+  'TENSEOCLOCK',
+];
+---
+
+<div class={`wc-preview${isHero ? ' wc-hero' : ''}`}>
+  <div class="wc-grid">
+    {GRID.map((row, r) => (
+      <div class="wc-row">
+        {row.split('').map((letter, c) => (
+          <span class="wc-letter" data-pos={`${r}-${c}`}>{letter}</span>
+        ))}
+      </div>
+    ))}
+  </div>
+</div>
+
+<script>
+  type Phrase = [number, number, number][];
+
+  const WC_PHRASES: Record<string, Phrase> = {
+    IT:      [[0, 0, 1]],
+    IS:      [[0, 3, 4]],
+    A:       [[1, 0, 0]],
+    QUARTER: [[1, 2, 8]],
+    TWENTY:  [[2, 0, 5]],
+    FIVE_M:  [[2, 6, 9]],
+    TEN_M:   [[3, 6, 8]],
+    HALF:    [[3, 0, 3]],
+    PAST:    [[4, 0, 3]],
+    TO:      [[3, 9, 10]],
+    ONE:     [[5, 0, 2]],
+    TWO:     [[6, 8, 10]],
+    THREE:   [[5, 6, 10]],
+    FOUR:    [[6, 0, 3]],
+    FIVE:    [[6, 4, 7]],
+    SIX:     [[5, 3, 5]],
+    SEVEN:   [[8, 0, 4]],
+    EIGHT:   [[7, 0, 4]],
+    NINE:    [[4, 7, 10]],
+    TEN:     [[9, 0, 2]],
+    ELEVEN:  [[7, 5, 10]],
+    TWELVE:  [[8, 5, 10]],
+    OCLOCK:  [[9, 5, 10]],
+  };
+
+  const HOUR_KEYS = ['TWELVE','ONE','TWO','THREE','FOUR','FIVE','SIX','SEVEN','EIGHT','NINE','TEN','ELEVEN','TWELVE'];
+
+  function wordClockLit(date: Date): Set<string> {
+    const lit = new Set<string>();
+    const mark = (key: string) => {
+      const ranges = WC_PHRASES[key];
+      if (!ranges) return;
+      for (const [r, a, b] of ranges) {
+        for (let c = a; c <= b; c++) lit.add(`${r}-${c}`);
+      }
+    };
+
+    mark('IT'); mark('IS');
+
+    const h = date.getHours();
+    const m = date.getMinutes();
+    const rounded = Math.round(m / 5) * 5;
+    const useNextHour = rounded > 30;
+    let displayHour = useNextHour ? (h + 1) % 24 : h;
+    displayHour = displayHour % 12;
+    if (displayHour === 0) displayHour = 12;
+
+    const min = rounded % 60;
+    if (min === 0)       { mark('OCLOCK'); }
+    else if (min === 5)  { mark('FIVE_M'); mark('PAST'); }
+    else if (min === 10) { mark('TEN_M');  mark('PAST'); }
+    else if (min === 15) { mark('A'); mark('QUARTER'); mark('PAST'); }
+    else if (min === 20) { mark('TWENTY'); mark('PAST'); }
+    else if (min === 25) { mark('TWENTY'); mark('FIVE_M'); mark('PAST'); }
+    else if (min === 30) { mark('HALF');   mark('PAST'); }
+    else if (min === 35) { mark('TWENTY'); mark('FIVE_M'); mark('TO'); }
+    else if (min === 40) { mark('TWENTY'); mark('TO'); }
+    else if (min === 45) { mark('A'); mark('QUARTER'); mark('TO'); }
+    else if (min === 50) { mark('TEN_M');  mark('TO'); }
+    else if (min === 55) { mark('FIVE_M'); mark('TO'); }
+
+    mark(HOUR_KEYS[displayHour]!);
+    return lit;
+  }
+
+  function updateClocks(): void {
+    const lit = wordClockLit(new Date());
+    document.querySelectorAll<HTMLElement>('.wc-letter[data-pos]').forEach(el => {
+      el.classList.toggle('wc-lit', lit.has(el.dataset.pos!));
+    });
+  }
+
+  updateClocks();
+  setInterval(updateClocks, 30_000);
+</script>

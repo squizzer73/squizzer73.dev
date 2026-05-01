@@ -1,0 +1,51 @@
+---
+interface Props {
+  size?: 'tile' | 'hero';
+}
+const { size = 'tile' } = Astro.props;
+const isHero = size === 'hero';
+
+const today = 14;
+const days = Array.from({ length: 30 }, (_, i) => i + 1);
+const weekHeaders = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
+const startOffset = 2; // April 2026 starts on Wednesday
+
+interface CalEvent { color: string; label: string; time?: string; cal?: string; }
+const events: Record<number, CalEvent> = {
+  14: { color: '#388bfd', label: 'Gym',               time: '19:00', cal: 'personal' },
+  16: { color: '#a371f7', label: 'F1 sprint',         time: '14:30', cal: 'f1' },
+  18: { color: '#3fb950', label: 'Hike' },
+  22: { color: '#f78166', label: 'Birthday' },
+  27: { color: '#388bfd', label: 'Gym 19:00' },
+};
+const heroEvents = Object.values(events).filter(e => e.time);
+---
+
+<div class={`cal-preview${isHero ? ' cal-hero' : ''}`}>
+  <div class="cal-head">
+    <span class="cal-month">April 2026</span>
+    <div class="cal-nav"><span>‹</span><span>›</span></div>
+  </div>
+  <div class="cal-grid">
+    {weekHeaders.map(h => <div class="cal-dow">{h}</div>)}
+    {Array.from({ length: startOffset }).map((_, i) => <div />)}
+    {days.map(d => (
+      <div class={`cal-day${d === today ? ' cal-today' : ''}`}>
+        <span class="cal-num">{d}</span>
+        {events[d] && <span class="cal-dot" style={`background:${events[d].color}`} />}
+      </div>
+    ))}
+  </div>
+  {isHero && (
+    <div class="cal-events">
+      {heroEvents.map(e => (
+        <div class="cal-event">
+          <span class="cal-event-dot" style={`background:${e.color}`} />
+          <span class="cal-event-time mono">{e.time}</span>
+          <span class="cal-event-title">{e.label}</span>
+          <span class="cal-event-cal mono faint">{e.cal}</span>
+        </div>
+      ))}
+    </div>
+  )}
+</div>

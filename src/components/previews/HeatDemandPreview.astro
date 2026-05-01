@@ -1,0 +1,30 @@
+---
+interface Props {
+  size?: 'tile' | 'hero';
+}
+const { size = 'tile' } = Astro.props;
+const isHero = size === 'hero';
+
+const rooms = [
+  { name: 'Lounge',   demand: 78, temp: '19.2°' },
+  { name: 'Bedroom',  demand: 42, temp: '18.4°' },
+  { name: 'Office',   demand: 91, temp: '17.8°' },
+  { name: 'Kitchen',  demand: 12, temp: '20.1°' },
+];
+---
+
+<div class={`hd-preview${isHero ? ' hd-hero' : ''}`}>
+  <div class="hd-head">
+    <span class="hd-title">Heat demand</span>
+    <span class="hd-status mono">62% avg</span>
+  </div>
+  <div class="hd-rows">
+    {rooms.map(r => (
+      <div class="hd-row">
+        <span class="hd-room">{r.name}</span>
+        <div class="hd-bar"><div class="hd-fill" style={`width:${r.demand}%`} /></div>
+        <span class="hd-temp mono">{r.temp}</span>
+      </div>
+    ))}
+  </div>
+</div>
