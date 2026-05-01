@@ -1,0 +1,40 @@
+---
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/global.css';
+import '../styles/previews.css';
+
+interface Props {
+  title: string;
+  description?: string;
+  activeNav?: 'cards' | 'blog' | 'about';
+}
+
+const {
+  title,
+  description = 'Open-source Home Assistant cards and automations by Mark Squires.',
+  activeNav,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <slot name="head" />
+  </head>
+  <body>
+    <Nav active={activeNav} />
+    <slot />
+    <Footer />
+  </body>
+</html>
