@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Why I rewrote the calendar card from scratch (twice) — squizzer73.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="previews.css" />
+<style>
+.post-page { padding: 56px 0 0; }
+
+.post-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+}
+.post-crumbs a { color: var(--text-muted); }
+.post-crumbs a:hover { color: var(--accent); }
+.post-crumbs .sep { color: var(--text-faint); }
+
+.post-header {
+  max-width: 720px;
+  margin: 0 auto 40px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+}
+.post-header .meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.post-header h1 {
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+.post-header .lede {
+  font-size: 18px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 640px;
+}
+.post-header .author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.post-header .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.post-body {
+  max-width: 720px;
+  margin: 0 auto;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #c9d1d9;
+}
+.post-body h2 {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--text);
+  margin: 48px 0 16px;
+}
+.post-body h3 {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--text);
+  margin: 32px 0 12px;
+}
+.post-body p { margin: 0 0 18px; }
+.post-body strong { color: var(--text); font-weight: 500; }
+.post-body a { color: var(--accent); border-bottom: 1px solid rgba(56, 139, 253, 0.4); }
+.post-body a:hover { border-bottom-color: var(--accent); }
+.post-body code {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: #c9d1d9;
+}
+.post-body pre.code-block {
+  margin: 24px 0;
+  padding: 18px 20px;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+.post-body ul, .post-body ol {
+  margin: 0 0 20px;
+  padding-left: 24px;
+}
+.post-body li { margin-bottom: 6px; }
+.post-body blockquote {
+  margin: 24px 0;
+  padding: 4px 0 4px 18px;
+  border-left: 2px solid var(--accent);
+  color: var(--text-muted);
+  font-style: italic;
+}
+.post-body hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 48px 0;
+}
+.post-body figure {
+  margin: 32px 0;
+  background: #0a0e14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+}
+.post-body figcaption {
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: center;
+}
+.callout {
+  margin: 24px 0;
+  padding: 14px 16px;
+  background: var(--accent-soft);
+  border: 1px solid rgba(56, 139, 253, 0.25);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+}
+.callout strong { color: var(--accent); }
+
+/* Syntax highlighting (minimal) */
+.tok-k { color: #ff7b72; }     /* keyword */
+.tok-s { color: #a5d6ff; }     /* string */
+.tok-c { color: #8b949e; font-style: italic; } /* comment */
+.tok-n { color: #d2a8ff; }     /* name/class */
+.tok-f { color: #d2a8ff; }     /* function */
+.tok-y { color: #79c0ff; }     /* yaml key */
+.tok-num { color: #79c0ff; }
+
+.post-foot {
+  max-width: 720px;
+  margin: 56px auto 0;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.post-foot .share {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.post-foot a { color: var(--accent); font-size: 14px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel">
+
+const App = () => {
+  return (
+    <>
+      <Nav active="blog" />
+      <main className="container post-page">
+        <div className="post-crumbs">
+          <a href="blog.html">blog</a>
+          <span className="sep">/</span>
+          <span className="mono">calendar-rewrite</span>
+        </div>
+
+        <header className="post-header">
+          <div className="meta">
+            <span className="tag tag-build">build log</span>
+            <span>·</span>
+            <span>14 Apr 2026</span>
+            <span>·</span>
+            <span>9 min read</span>
+          </div>
+          <h1>Why I rewrote the calendar card from scratch (twice)</h1>
+          <p className="lede">
+            First attempt: a thin wrapper. Second attempt: a fork. Third attempt: actually understanding ResizeObserver. A post-mortem on what auto-scaling really means.
+          </p>
+          <div className="author">
+            <span className="avatar">MS</span>
+            <span>Mark Squires · Buckinghamshire, UK</span>
+          </div>
+        </header>
+
+        <article className="post-body">
+          <p>
+            The default Home Assistant calendar card is fine if you have one calendar, you only care about today, and you size your tile exactly the way the original author imagined. Three calendars and a 2×1 footprint? It falls apart. So I rewrote it. And then I rewrote it again. This is a post about the failure modes I discovered in between, because I think they're useful.
+          </p>
+
+          <h2>The first attempt: a thin wrapper</h2>
+          <p>
+            The original calendar card renders an agenda list. My naive plan was to keep that rendering and just add multi-calendar support on top. Pull events from N entities, dedupe, sort, hand the list back to the existing renderer. About a hundred lines of code.
+          </p>
+          <p>
+            It worked. It also looked terrible. The renderer assumed events came from one source and styled them with a single colour. My "wrap it" approach meant I either monkey-patched the renderer (fragile) or post-processed the rendered DOM to recolour event chips (also fragile, and the recolour ran <em>after</em> Lovelace's animation, so events would flash one colour then snap to another). I shipped it for a week and then took it down.
+          </p>
+
+          <pre className="code-block">{`// v0.1 — the bad idea, simplified
+class CalendarEventsCard extends LitElement {
+  render() {
+    const events = this.config.entities.flatMap(
+      e => this.hass.states[e].attributes.events || []
+    );
+    return html\`<hui-calendar-card
+      .events=\${events}
+    ></hui-calendar-card>\`;
+  }
+}`}</pre>
+
+          <p>
+            <code>hui-calendar-card</code> is a private component. Reading from <code>this.hass.states[...].attributes.events</code> only works if the calendar integration happens to populate that attribute on every refresh, which most don't. I was reaching into HA's private API and hoping nothing changed. It changed.
+          </p>
+
+          <h2>The second attempt: forking the original</h2>
+          <p>
+            So I forked. I copied the official card's source, ripped out the parts I didn't need, and rebuilt the rendering loop. This time I controlled the colour mapping, I called the calendar API directly, and I had a real <code>config</code> schema with multi-entity support.
+          </p>
+          <p>
+            And it still looked bad — but for a different reason. <strong>Auto-scaling.</strong>
+          </p>
+          <p>
+            The original card uses a fixed font size. At a 4-wide tile that's fine. At a 1-wide tile the date heading wraps, the time-strings overflow, and the event chip sits half off the edge. The CSS-only fix everyone reaches for is <code>font-size: clamp(...)</code> based on viewport units. That doesn't work in a Lovelace card, because the card doesn't fill the viewport — it fills whatever cell the layout engine gives it, which depends on the user's grid config and is frequently wrong by a factor of two.
+          </p>
+
+          <div className="callout">
+            <strong>The lesson:</strong> in a tile-based dashboard, the card has no idea how big it will be until <em>after</em> it's been placed. Any sizing logic that runs in <code>render()</code> is too early.
+          </div>
+
+          <h2>The third attempt: ResizeObserver</h2>
+          <p>
+            <code>ResizeObserver</code> fires when an element's size changes, including the first time it's measured. The pattern is: render the card at a baseline font size, observe the container, and rescale the inner content based on the actual measured width.
+          </p>
+
+          <pre className="code-block">{`// v1.0 — auto-scaling that actually works
+const BASE_WIDTH = 360;
+const MIN_SCALE = 0.6;
+const MAX_SCALE = 1.4;
+
+class CalendarEventsCard extends LitElement {
+  firstUpdated() {
+    this._ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      const scale = Math.max(
+        MIN_SCALE,
+        Math.min(MAX_SCALE, w / BASE_WIDTH)
+      );
+      this.style.setProperty("--cec-scale", scale);
+    });
+    this._ro.observe(this);
+  }
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._ro?.disconnect();
+  }
+}`}</pre>
+
+          <p>
+            With <code>--cec-scale</code> exposed as a CSS custom property, every text size in the card becomes <code>calc(13px * var(--cec-scale))</code> and the whole layout breathes with the tile size. No more wrapped headings. No more clipped chips. No more guessing.
+          </p>
+
+          <h3>The DST gotcha</h3>
+          <p>
+            Once layout was solid, I shipped v1.0 — and immediately got an issue filed about all-day events on the 27th of October showing on the 26th. DST. The events come back as ISO strings with a <code>Z</code> suffix; if you parse them with <code>new Date()</code> and then call <code>.toLocaleDateString()</code>, you get the local date. <em>Almost.</em>
+          </p>
+          <p>
+            All-day events are special. They aren't anchored to a time zone — they're a calendar date, full stop. The 27th of October in your calendar is the 27th of October regardless of where you are. If you treat <code>2026-10-27T00:00:00Z</code> as a moment-in-time and convert to local, you will be off by one whenever your local offset is negative at that moment. Which it is, in the UK, exactly during the DST switchover.
+          </p>
+
+          <pre className="code-block">{`// Parse "all day" events as date-only, never as instants
+function parseEventStart(ev) {
+  if (ev.start.date) {
+    // All-day: "2026-10-27"
+    const [y, m, d] = ev.start.date.split("-").map(Number);
+    return new Date(y, m - 1, d); // local midnight, no offset
+  }
+  return new Date(ev.start.dateTime); // timed event, has offset
+}`}</pre>
+
+          <h2>What I'd do differently</h2>
+          <ul>
+            <li><strong>Start with a config schema, not a render loop.</strong> v0.1 wrapped a renderer; v1.0 starts from "what does the user type into YAML" and builds outward. The second framing is much harder to paint yourself into a corner with.</li>
+            <li><strong>Don't reach into private HA components.</strong> If you find yourself rendering <code>hui-*</code> tags by name, stop. They're private for a reason.</li>
+            <li><strong>Layout decisions belong in observers, not render.</strong> Lovelace cards are placed, not painted. <code>ResizeObserver</code> is the API that respects that.</li>
+            <li><strong>All-day events are dates, not instants.</strong> If you remember nothing else from this post, remember that.</li>
+          </ul>
+
+          <hr />
+
+          <p>
+            v1.2 just landed with the visual editor and stable colour mapping. <a href="card-calendar.html">The card detail page has the install instructions and config reference.</a> Issues, PRs and "you're holding it wrong" tickets all welcome on <a href="https://github.com/squizzer73/calendar-events-card" target="_blank" rel="noreferrer">the repo</a>.
+          </p>
+        </article>
+
+        <div className="post-foot">
+          <a href="blog.html">← All posts</a>
+          <div className="share">
+            <span>Share:</span>
+            <a href="#">copy link</a>
+            <a href="#">mastodon</a>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

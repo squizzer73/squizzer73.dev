@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Calendar events card — squizzer73.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="previews.css" />
+<style>
+.detail {
+  padding: 48px 0 0;
+}
+.crumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+}
+.crumbs a { color: var(--text-muted); }
+.crumbs a:hover { color: var(--accent); }
+.crumbs .sep { color: var(--text-faint); }
+
+.detail-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 32px;
+}
+.detail-head h1 {
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+  line-height: 1.15;
+}
+.detail-head .desc {
+  color: var(--text-muted);
+  font-size: 16px;
+  max-width: 600px;
+  line-height: 1.55;
+  margin: 0;
+}
+.detail-head-meta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.detail-head-meta .dot { color: var(--text-faint); }
+
+.detail-actions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Demo area */
+.demo-frame {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 56px;
+  position: relative;
+}
+.demo-frame-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.demo-frame-bar-left { display: flex; gap: 8px; align-items: center; }
+.demo-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #3fb950;
+  animation: live-pulse 2s ease-in-out infinite;
+}
+@keyframes live-pulse { 50% { opacity: 0.3; } }
+.demo-frame-controls {
+  display: flex;
+  gap: 8px;
+}
+.demo-tab {
+  background: transparent;
+  border: 1px solid var(--border-2);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.demo-tab.active {
+  color: var(--text);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.demo-stage {
+  background: #0a0e14;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.demo-stage > * { width: 100%; max-width: 580px; }
+
+/* Two-col layout for content below */
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 56px;
+  align-items: start;
+}
+.detail-grid h2 {
+  font-size: 18px;
+  font-weight: 500;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+.detail-grid section {
+  margin-bottom: 48px;
+}
+
+/* Feature list */
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+.features li {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 12px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text);
+}
+.features li svg {
+  color: var(--accent);
+  margin-top: 3px;
+}
+.features li span.muted {
+  display: block;
+  color: var(--text-muted);
+  font-size: 13px;
+  margin-top: 2px;
+}
+
+/* Install tabs */
+.install-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.install-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 10px 16px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.install-tab.active {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+}
+.install-body { font-size: 14px; }
+.install-body p { color: var(--text-muted); line-height: 1.6; margin: 0 0 14px; }
+.install-step {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.install-step-num {
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-size: 12px;
+  padding-top: 1px;
+}
+
+.copyable {
+  position: relative;
+}
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: color 120ms, border-color 120ms;
+}
+.copy-btn:hover { color: var(--text); border-color: #484f58; }
+.copy-btn.copied { color: #3fb950; border-color: #3fb950; }
+
+.hacs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.hacs-badge .pill {
+  background: var(--accent);
+  color: #0a0e14;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 11px;
+}
+
+/* Config table */
+.config-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  border-spacing: 0;
+}
+.config-table th, .config-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+.config-table th {
+  background: var(--surface);
+  font-weight: 500;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
+}
+.config-table tr:last-child td { border-bottom: none; }
+.config-table .name { font-family: var(--font-mono); color: var(--accent); }
+.config-table .type { font-family: var(--font-mono); color: var(--text-muted); }
+.config-table .req {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #f78166;
+}
+.config-table .req.opt { color: var(--text-muted); }
+
+/* Changelog accordion */
+.changelog-item {
+  border-bottom: 1px solid var(--border);
+}
+.changelog-item:last-child { border-bottom: none; }
+.changelog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  cursor: pointer;
+  user-select: none;
+}
+.changelog-header:hover .changelog-version { color: var(--accent); }
+.changelog-left { display: flex; align-items: baseline; gap: 14px; }
+.changelog-version {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 500;
+  transition: color 120ms;
+}
+.changelog-date {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.changelog-chevron {
+  color: var(--text-muted);
+  transition: transform 200ms;
+}
+.changelog-item.open .changelog-chevron { transform: rotate(90deg); }
+.changelog-body {
+  display: none;
+  padding: 0 0 18px;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.changelog-body ul { margin: 0; padding-left: 18px; }
+.changelog-body li { margin-bottom: 4px; }
+.changelog-item.open .changelog-body { display: block; }
+
+/* Sidebar */
+.detail-sidebar { position: sticky; top: 88px; }
+.sidebar-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.sidebar-block h3 {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+.sidebar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  padding: 6px 0;
+}
+.sidebar-row + .sidebar-row { border-top: 1px solid var(--border); }
+.sidebar-row .label { color: var(--text-muted); }
+.sidebar-row .val { font-family: var(--font-mono); color: var(--text); }
+
+@media (max-width: 880px) {
+  .detail-head { flex-direction: column; align-items: flex-start; }
+  .detail-grid { grid-template-columns: 1fr; gap: 24px; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel">
+
+const Check = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 8l3.5 3.5L13 5"/></svg>
+);
+
+const Chevron = () => (
+  <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M6 4l4 4-4 4"/></svg>
+);
+
+// Animated calendar that simulates data updating
+const LiveCalendarDemo = () => {
+  const [tick, setTick] = React.useState(0);
+  React.useEffect(() => {
+    const id = setInterval(() => setTick(t => t + 1), 3000);
+    return () => clearInterval(id);
+  }, []);
+  // Pulsing "today" indicator
+  return (
+    <div style={{position: "relative"}}>
+      <CalendarPreview size="hero" />
+    </div>
+  );
+};
+
+const CodeBlock = ({ code, label }) => {
+  const [copied, setCopied] = React.useState(false);
+  const handle = () => {
+    navigator.clipboard?.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1400);
+  };
+  return (
+    <div className="copyable">
+      <pre className="code-block">{code}</pre>
+      <button className={`copy-btn ${copied ? "copied" : ""}`} onClick={handle}>
+        {copied ? "copied" : "copy"}
+      </button>
+    </div>
+  );
+};
+
+const InstallTabs = () => {
+  const [tab, setTab] = React.useState("hacs");
+  return (
+    <div>
+      <div className="install-tabs">
+        <button className={`install-tab ${tab === "hacs" ? "active" : ""}`} onClick={() => setTab("hacs")}>HACS</button>
+        <button className={`install-tab ${tab === "manual" ? "active" : ""}`} onClick={() => setTab("manual")}>Manual</button>
+      </div>
+      <div className="install-body">
+        {tab === "hacs" ? (
+          <>
+            <p>One-click install via the Home Assistant Community Store. Updates land automatically.</p>
+            <div className="install-step">
+              <div className="install-step-num">01</div>
+              <div>
+                Open HACS → Frontend → Custom repositories. Add this URL as type <span className="mono">Lovelace</span>:
+                <div style={{marginTop: 10}}>
+                  <CodeBlock code="https://github.com/squizzer73/calendar-events-card" />
+                </div>
+              </div>
+            </div>
+            <div className="install-step">
+              <div className="install-step-num">02</div>
+              <div>
+                Install <span className="mono">calendar-events-card</span>, then add the resource to your Lovelace config (HACS handles this on most setups).
+              </div>
+            </div>
+            <div className="install-step">
+              <div className="install-step-num">03</div>
+              <div style={{display: "flex", flexDirection: "column", gap: 10}}>
+                <span>Or hit the badge:</span>
+                <span className="hacs-badge">
+                  <span className="pill">HACS</span>
+                  <span>Open in My Home Assistant</span>
+                </span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <p>Drop the file into your custom panel and register it as a Lovelace resource.</p>
+            <div className="install-step">
+              <div className="install-step-num">01</div>
+              <div>
+                Download <span className="mono">calendar-events-card.js</span> from the latest release and place it under <span className="mono">/config/www/</span>.
+              </div>
+            </div>
+            <div className="install-step">
+              <div className="install-step-num">02</div>
+              <div>
+                Add the resource (Settings → Dashboards → ⋮ → Resources):
+                <div style={{marginTop: 10}}>
+                  <CodeBlock code={`url: /local/calendar-events-card.js\ntype: module`} />
+                </div>
+              </div>
+            </div>
+            <div className="install-step">
+              <div className="install-step-num">03</div>
+              <div>Reload the frontend (Ctrl/Cmd-Shift-R) and add the card from the picker.</div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ChangelogAccordion = () => {
+  const [open, setOpen] = React.useState("v1.2");
+  const items = [
+    { v: "v1.2", date: "21 Apr 2026", notes: ["Auto-scaling text on the events list — never overflows again.", "Visual editor: drag to reorder calendars, set per-calendar colour.", "Fix: time zone offset on all-day events spanning DST."] },
+    { v: "v1.1", date: "08 Apr 2026", notes: ["Multi-calendar support with stable colour mapping.", "Compact mode for small Lovelace tiles.", "Fix: today highlight off-by-one when locale week starts on Sunday."] },
+    { v: "v1.0", date: "29 Mar 2026", notes: ["Initial public release.", "Month grid + agenda list.", "HACS-compatible packaging."] },
+  ];
+  return (
+    <div>
+      {items.map(it => (
+        <div key={it.v} className={`changelog-item ${open === it.v ? "open" : ""}`}>
+          <div className="changelog-header" onClick={() => setOpen(open === it.v ? null : it.v)}>
+            <div className="changelog-left">
+              <span className="changelog-version">{it.v}</span>
+              <span className="changelog-date">{it.date}</span>
+            </div>
+            <span className="changelog-chevron"><Chevron /></span>
+          </div>
+          <div className="changelog-body">
+            <ul>
+              {it.notes.map((n, i) => <li key={i}>{n}</li>)}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const App = () => {
+  return (
+    <>
+      <Nav active="cards" />
+      <main className="container detail">
+        <div className="crumbs">
+          <a href="index.html">cards</a>
+          <span className="sep">/</span>
+          <span className="mono">calendar-events-card</span>
+        </div>
+
+        <div className="detail-head">
+          <div>
+            <h1>Calendar events card</h1>
+            <p className="desc">
+              A multi-calendar Lovelace card with auto-scaling text, a visual editor, and stable colour mapping. Built because the default calendar card was a single-calendar wall of grey text.
+            </p>
+            <div className="detail-head-meta">
+              <span className="tag tag-version">v1.2</span>
+              <span>·</span>
+              <span>HACS compatible</span>
+              <span className="dot">·</span>
+              <span>HA 2024.4+</span>
+              <span className="dot">·</span>
+              <span>MIT</span>
+            </div>
+          </div>
+          <div className="detail-actions">
+            <a className="btn" href="https://github.com/squizzer73/calendar-events-card" target="_blank" rel="noreferrer">View on GitHub</a>
+            <a className="btn btn-primary" href="#install">Install →</a>
+          </div>
+        </div>
+
+        <div className="demo-frame">
+          <div className="demo-frame-bar">
+            <div className="demo-frame-bar-left">
+              <span className="demo-live-dot" />
+              <span>Live demo · simulated data updating every 3s</span>
+            </div>
+            <div className="demo-frame-controls">
+              <button className="demo-tab active">month</button>
+              <button className="demo-tab">agenda</button>
+              <button className="demo-tab">compact</button>
+            </div>
+          </div>
+          <div className="demo-stage">
+            <LiveCalendarDemo />
+          </div>
+        </div>
+
+        <div className="detail-grid">
+          <div>
+            <section>
+              <h2>Features</h2>
+              <ul className="features">
+                <li><Check /><div>Multi-calendar overlay with stable per-calendar colour mapping. <span className="muted">Configure once, colours stick across reloads.</span></div></li>
+                <li><Check /><div>Auto-scaling text via ResizeObserver. <span className="muted">Looks right at any tile size, from full-width to 1×1.</span></div></li>
+                <li><Check /><div>Three views: month grid, agenda list, compact strip. <span className="muted">Switch in YAML or via the visual editor.</span></div></li>
+                <li><Check /><div>Visual editor with drag-reorder for calendars. <span className="muted">No YAML required, but every option still YAML-configurable.</span></div></li>
+                <li><Check /><div>All-day events handled correctly across DST and timezones. <span className="muted">Yes, this took two rewrites.</span></div></li>
+                <li><Check /><div>Keyboard navigable, screen-reader friendly. <span className="muted">aria-live region for upcoming events.</span></div></li>
+              </ul>
+            </section>
+
+            <section id="install">
+              <h2>Install</h2>
+              <InstallTabs />
+            </section>
+
+            <section>
+              <h2>Configuration</h2>
+              <table className="config-table">
+                <thead>
+                  <tr><th>Option</th><th>Type</th><th>Default</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td><span className="name">type</span></td><td><span className="type">string</span></td><td><span className="req">required</span></td><td>Always <span className="mono">custom:calendar-events-card</span>.</td></tr>
+                  <tr><td><span className="name">entities</span></td><td><span className="type">list</span></td><td><span className="req">required</span></td><td>List of <span className="mono">calendar.*</span> entities to display.</td></tr>
+                  <tr><td><span className="name">view</span></td><td><span className="type">string</span></td><td><span className="mono">month</span></td><td>One of <span className="mono">month</span>, <span className="mono">agenda</span>, <span className="mono">compact</span>.</td></tr>
+                  <tr><td><span className="name">days_ahead</span></td><td><span className="type">number</span></td><td><span className="mono">14</span></td><td>How many days the agenda view looks forward.</td></tr>
+                  <tr><td><span className="name">colors</span></td><td><span className="type">map</span></td><td><span className="req opt">optional</span></td><td>Per-entity hex colour override. Defaults to the auto palette.</td></tr>
+                  <tr><td><span className="name">title</span></td><td><span className="type">string</span></td><td><span className="req opt">optional</span></td><td>Card header. Hide by omitting.</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <section>
+              <h2>Changelog</h2>
+              <ChangelogAccordion />
+            </section>
+          </div>
+
+          <aside className="detail-sidebar">
+            <div className="sidebar-block">
+              <h3>At a glance</h3>
+              <div className="sidebar-row"><span className="label">Latest</span><span className="val">v1.2</span></div>
+              <div className="sidebar-row"><span className="label">Released</span><span className="val">21 Apr 2026</span></div>
+              <div className="sidebar-row"><span className="label">Min HA</span><span className="val">2024.4</span></div>
+              <div className="sidebar-row"><span className="label">Size</span><span className="val">28 kB</span></div>
+              <div className="sidebar-row"><span className="label">License</span><span className="val">MIT</span></div>
+            </div>
+            <div className="sidebar-block">
+              <h3>Links</h3>
+              <div className="sidebar-row"><span className="label">Repo</span><a className="val" href="https://github.com/squizzer73/calendar-events-card" target="_blank" rel="noreferrer">github ↗</a></div>
+              <div className="sidebar-row"><span className="label">Issues</span><a className="val" href="#">tracker ↗</a></div>
+              <div className="sidebar-row"><span className="label">Releases</span><a className="val" href="#">all ↗</a></div>
+            </div>
+          </aside>
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

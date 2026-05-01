@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Blog — squizzer73.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="previews.css" />
+<style>
+.blog-page {
+  padding: 56px 0 0;
+}
+.blog-head {
+  margin-bottom: 32px;
+}
+.blog-head h1 {
+  font-size: 36px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0 0 12px;
+}
+.blog-head p {
+  color: var(--text-muted);
+  font-size: 16px;
+  max-width: 580px;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.blog-filters {
+  display: flex;
+  gap: 8px;
+  margin: 32px 0 24px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.blog-filter {
+  background: transparent;
+  border: 1px solid var(--border-2);
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: color 120ms, border-color 120ms, background 120ms;
+}
+.blog-filter:hover { color: var(--text); border-color: #484f58; }
+.blog-filter.active {
+  color: var(--text);
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+.blog-filter .count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-left: 6px;
+}
+.blog-filter.active .count { color: var(--accent); }
+.filter-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+}
+.post-row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  gap: 24px;
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: baseline;
+  transition: border-color 120ms;
+}
+.post-row:last-child { border-bottom: none; }
+.post-row:hover .post-row-title { color: var(--accent); }
+.post-row-date {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.post-row-meta {}
+.post-row-title {
+  font-size: 17px;
+  font-weight: 500;
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+  transition: color 120ms;
+}
+.post-row-excerpt {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 640px;
+}
+.post-row-tag { align-self: flex-start; }
+.post-empty {
+  padding: 64px 0;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+@media (max-width: 720px) {
+  .post-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel">
+
+const ALL_POSTS = [
+  {
+    slug: "trv-heat-demand",
+    title: "Building a TRV heat demand aggregator in Home Assistant",
+    date: "28 Apr 2026",
+    tag: "ha",
+    excerpt: "Why a single boiler call-for-heat sensor isn't enough, and how to weight per-room demand by valve position, room delta and zone priority.",
+  },
+  {
+    slug: "calendar-rewrite",
+    title: "Why I rewrote the calendar card from scratch (twice)",
+    date: "14 Apr 2026",
+    tag: "build",
+    excerpt: "First attempt: a thin wrapper. Second attempt: a fork. Third attempt: actually understanding ResizeObserver. A post-mortem on what auto-scaling really means.",
+  },
+  {
+    slug: "f1-lighting",
+    title: "F1 race status lighting with Govee and govee2mqtt",
+    date: "2 Apr 2026",
+    tag: "auto",
+    excerpt: "The bulbs match the flag. Yellow when there's a yellow flag, red for red, green at lights-out. A weekend project that became a weekly ritual.",
+  },
+  {
+    slug: "lovelace-density",
+    title: "On density: why HA dashboards always look bad",
+    date: "21 Mar 2026",
+    tag: "build",
+    excerpt: "Default Lovelace cards are sized for a phone, then stretched. Here's why that fails and what I do instead.",
+  },
+  {
+    slug: "node-red-vs-yaml",
+    title: "Node-RED vs YAML automations: when to reach for which",
+    date: "08 Mar 2026",
+    tag: "auto",
+    excerpt: "I used to be a YAML purist. I'm not anymore. The decision tree, with examples that actually run in my house.",
+  },
+  {
+    slug: "esphome-presence",
+    title: "Room-level presence with ESPHome and mmWave (without the false positives)",
+    date: "24 Feb 2026",
+    tag: "ha",
+    excerpt: "LD2410B + a debounce automation + a calibration walkthrough. The result: lights that don't turn off while I'm sat reading.",
+  },
+];
+
+const TAG_META = {
+  ha:    { label: "HA",         className: "tag-ha"    },
+  build: { label: "build log",  className: "tag-build" },
+  auto:  { label: "automation", className: "tag-auto"  },
+};
+
+const FILTERS = [
+  { id: "all", label: "All" },
+  { id: "ha", label: "HA" },
+  { id: "build", label: "build log" },
+  { id: "auto", label: "automation" },
+];
+
+const App = () => {
+  const [filter, setFilter] = React.useState("all");
+  const counts = React.useMemo(() => {
+    const c = { all: ALL_POSTS.length, ha: 0, build: 0, auto: 0 };
+    ALL_POSTS.forEach(p => { c[p.tag]++; });
+    return c;
+  }, []);
+  const filtered = filter === "all" ? ALL_POSTS : ALL_POSTS.filter(p => p.tag === filter);
+
+  return (
+    <>
+      <Nav active="blog" />
+      <main className="container blog-page">
+        <header className="blog-head">
+          <div className="eyebrow eyebrow-muted" style={{marginBottom: 14, color: "var(--accent)"}}>BLOG</div>
+          <h1>Notes from the workshop</h1>
+          <p>Build logs, Home Assistant deep-dives, and the occasional automation that's too cursed to keep to myself.</p>
+        </header>
+
+        <div className="blog-filters">
+          <span className="filter-label">Filter</span>
+          {FILTERS.map(f => (
+            <button
+              key={f.id}
+              className={`blog-filter ${filter === f.id ? "active" : ""}`}
+              onClick={() => setFilter(f.id)}
+            >
+              {f.label}<span className="count">{counts[f.id]}</span>
+            </button>
+          ))}
+        </div>
+
+        <div className="posts-list">
+          {filtered.length === 0 && <div className="post-empty">No posts under this tag yet.</div>}
+          {filtered.map(p => (
+            <a key={p.slug} className="post-row" href={`blog-post.html?slug=${p.slug}`}>
+              <div className="post-row-date">{p.date}</div>
+              <div className="post-row-meta">
+                <h3 className="post-row-title">{p.title}</h3>
+                <p className="post-row-excerpt">{p.excerpt}</p>
+              </div>
+              <span className={`tag ${TAG_META[p.tag].className} post-row-tag`}>{TAG_META[p.tag].label}</span>
+            </a>
+          ))}
+        </div>
+      </main>
+      <Footer />
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

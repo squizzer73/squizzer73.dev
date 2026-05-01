@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>squizzer73.dev — Home Assistant custom cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="previews.css" />
+<style>
+/* ===== HOMEPAGE-SPECIFIC ===== */
+
+/* Hero — variation A (default): big two-line headline left, CTAs, no card on right */
+.hero {
+  padding: 72px 0 56px;
+}
+.hero-eyebrow {
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow .sep {
+  color: var(--text-faint);
+}
+.hero h1 {
+  font-size: 44px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  margin: 0 0 18px;
+  max-width: 760px;
+  text-wrap: balance;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero-sub {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+.hero-ctas {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Hero stats */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  gap: 64px;
+  padding: 36px 0 0;
+  margin-top: 40px;
+  border-top: 1px solid var(--border);
+}
+.stat-num {
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ===== Hero variation B: split layout with live card preview on right ===== */
+.hero.hero-split {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  padding: 72px 0 56px;
+}
+.hero.hero-split h1 { font-size: 40px; }
+.hero-split-preview {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-split-preview > * { width: 100%; height: 100%; }
+
+/* ===== Hero variation C: terminal-style ===== */
+.hero.hero-terminal {
+  padding: 72px 0 56px;
+}
+.hero-term-window {
+  background: #010409;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  margin-bottom: 36px;
+  font-family: var(--font-mono);
+  overflow: hidden;
+}
+.hero-term-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.hero-term-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: var(--border-2);
+}
+.hero-term-title {
+  margin-left: 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.hero-term-body {
+  padding: 22px 24px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.hero-term-prompt { color: var(--accent); margin-right: 8px; }
+.hero-term-out { color: var(--text-muted); }
+.hero-term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background: var(--accent);
+  vertical-align: text-bottom;
+  margin-left: 2px;
+  animation: blink 1.1s steps(2) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+.hero-terminal h1 {
+  font-size: 38px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 16px;
+  max-width: 760px;
+}
+
+/* Blog list (homepage section) */
+.blog-list {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.blog-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  transition: background 120ms;
+}
+.blog-row:last-child { border-bottom: none; }
+.blog-row:hover { background: var(--surface-2); }
+.blog-row:hover .blog-row-title { color: var(--accent); }
+.blog-row-meta { flex: 1; }
+.blog-row-title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  transition: color 120ms;
+}
+.blog-row-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+@media (max-width: 880px) {
+  .cards-grid { grid-template-columns: 1fr; }
+  .hero h1 { font-size: 32px; }
+  .hero.hero-split { grid-template-columns: 1fr; gap: 32px; }
+  .stats { gap: 32px; }
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="shared.jsx"></script>
+<script type="text/babel">
+const HOME_TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "heroVariant": "split",
+  "accent": "blue"
+}/*EDITMODE-END*/;
+
+const ACCENT_PRESETS = {
+  blue:    { color: "#388bfd", soft: "rgba(56, 139, 253, 0.12)", versionFg: "#79b8ff", versionBg: "rgba(56, 139, 253, 0.22)" },
+  violet:  { color: "#a371f7", soft: "rgba(163, 113, 247, 0.13)", versionFg: "#bd93f7", versionBg: "rgba(163, 113, 247, 0.22)" },
+  cyan:    { color: "#39c5cf", soft: "rgba(57, 197, 207, 0.13)", versionFg: "#5dd8e1", versionBg: "rgba(57, 197, 207, 0.22)" },
+  amber:   { color: "#e3b341", soft: "rgba(227, 179, 65, 0.13)", versionFg: "#e8c275", versionBg: "rgba(227, 179, 65, 0.22)" },
+};
+
+function applyAccent(name) {
+  const p = ACCENT_PRESETS[name] || ACCENT_PRESETS.blue;
+  document.documentElement.style.setProperty("--accent", p.color);
+  document.documentElement.style.setProperty("--accent-soft", p.soft);
+  document.documentElement.style.setProperty("--tag-version-fg", p.versionFg);
+  document.documentElement.style.setProperty("--tag-version-bg", p.versionBg);
+}
+
+const CARDS = [
+  {
+    name: "Calendar events card",
+    desc: "Multi-calendar display with auto-scaling text and visual editor support.",
+    filename: "calendar-events-card.js",
+    versionTag: "v1.2",
+    tagKind: "version",
+    detailUrl: "card-calendar.html",
+    preview: <CalendarPreview size="tile" />,
+  },
+  {
+    name: "Word clock card",
+    desc: "11×10 English word grid with ResizeObserver auto-scaling. Always fits.",
+    filename: "word-clock-card.js",
+    versionTag: "new",
+    tagKind: "new",
+    detailUrl: "#word-clock",
+    preview: <WordClockPreview size="tile" />,
+  },
+  {
+    name: "Heat demand card",
+    desc: "Per-room TRV demand visualisation with adaptive thresholds. WIP.",
+    filename: "heat-demand-card.js",
+    versionTag: "wip",
+    tagKind: "version",
+    detailUrl: "#heat-demand",
+    preview: <HeatDemandPreview size="tile" />,
+  },
+];
+
+const POSTS = [
+  { slug: "trv-heat-demand", title: "Building a TRV heat demand aggregator in Home Assistant", date: "28 Apr 2026", tag: "ha" },
+  { slug: "calendar-rewrite", title: "Why I rewrote the calendar card from scratch (twice)", date: "14 Apr 2026", tag: "build" },
+  { slug: "f1-lighting", title: "F1 race status lighting with Govee and govee2mqtt", date: "2 Apr 2026", tag: "auto" },
+];
+
+const TAG_CLASSES = { ha: "tag-ha", build: "tag-build", auto: "tag-auto" };
+const TAG_LABELS = { ha: "HA", build: "build log", auto: "automation" };
+
+// === HERO VARIANTS ===
+const HeroStacked = () => (
+  <section className="hero">
+    <div className="container">
+      <div className="hero-eyebrow eyebrow">
+        <span>Home Assistant</span>
+        <span className="sep">·</span>
+        <span>Custom cards</span>
+      </div>
+      <h1>
+        Custom home automation that<br />looks <span className="accent">built on purpose.</span>
+      </h1>
+      <p className="hero-sub">
+        Open-source Home Assistant cards and automations. Technical. Clean. Connected.
+      </p>
+      <div className="hero-ctas">
+        <a className="btn btn-primary" href="#cards">Browse cards →</a>
+        <a className="btn" href="https://youtube.com/@squizzer73" target="_blank" rel="noreferrer">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          Watch on YouTube
+        </a>
+      </div>
+      <div className="stats">
+        <div>
+          <div className="stat-num">3</div>
+          <div className="stat-label">cards released</div>
+        </div>
+        <div>
+          <div className="stat-num">—</div>
+          <div className="stat-label">GitHub stars</div>
+        </div>
+        <div>
+          <div className="stat-num">HACS</div>
+          <div className="stat-label">compatible</div>
+        </div>
+      </div>
+    </div>
+  </section>
+);
+
+const HeroSplit = () => (
+  <section className="hero hero-split container">
+    <div>
+      <div className="hero-eyebrow eyebrow">
+        <span>Home Assistant</span>
+        <span className="sep">·</span>
+        <span>Custom cards</span>
+      </div>
+      <h1>
+        Custom home automation that looks <span className="accent">built on purpose.</span>
+      </h1>
+      <p className="hero-sub">
+        Open-source Home Assistant cards and automations. Technical. Clean. Connected.
+      </p>
+      <div className="hero-ctas">
+        <a className="btn btn-primary" href="#cards">Browse cards →</a>
+        <a className="btn" href="https://youtube.com/@squizzer73" target="_blank" rel="noreferrer">Watch on YouTube</a>
+      </div>
+      <div className="stats">
+        <div><div className="stat-num">3</div><div className="stat-label">cards released</div></div>
+        <div><div className="stat-num">—</div><div className="stat-label">GitHub stars</div></div>
+        <div><div className="stat-num">HACS</div><div className="stat-label">compatible</div></div>
+      </div>
+    </div>
+    <div className="hero-split-preview">
+      <WordClockPreview size="hero" />
+    </div>
+  </section>
+);
+
+const HeroTerminal = () => {
+  const [installed, setInstalled] = React.useState(false);
+  React.useEffect(() => {
+    const id = setTimeout(() => setInstalled(true), 1200);
+    return () => clearTimeout(id);
+  }, []);
+  return (
+    <section className="hero hero-terminal">
+      <div className="container">
+        <div className="hero-eyebrow eyebrow">
+          <span>Home Assistant</span>
+          <span className="sep">·</span>
+          <span>Custom cards</span>
+        </div>
+        <h1>
+          Custom home automation that looks <span className="accent">built on purpose.</span>
+        </h1>
+        <p className="hero-sub">
+          Open-source Home Assistant cards and automations. Technical. Clean. Connected.
+        </p>
+        <div className="hero-term-window">
+          <div className="hero-term-bar">
+            <span className="hero-term-dot" />
+            <span className="hero-term-dot" />
+            <span className="hero-term-dot" />
+            <span className="hero-term-title mono">~/.homeassistant — hacs install</span>
+          </div>
+          <div className="hero-term-body">
+            <div><span className="hero-term-prompt">$</span><span>hacs install squizzer73/calendar-events-card</span></div>
+            {installed && <>
+              <div className="hero-term-out">→ resolved v1.2 from github.com/squizzer73</div>
+              <div className="hero-term-out">→ copied to /config/www/community/calendar-events-card</div>
+              <div style={{color: "#3fb950"}}>✓ installed. restart frontend to use.</div>
+            </>}
+            <div><span className="hero-term-prompt">$</span><span className="hero-term-cursor" /></div>
+          </div>
+        </div>
+        <div className="hero-ctas">
+          <a className="btn btn-primary" href="#cards">Browse cards →</a>
+          <a className="btn" href="https://youtube.com/@squizzer73" target="_blank" rel="noreferrer">Watch on YouTube</a>
+        </div>
+        <div className="stats">
+          <div><div className="stat-num">3</div><div className="stat-label">cards released</div></div>
+          <div><div className="stat-num">—</div><div className="stat-label">GitHub stars</div></div>
+          <div><div className="stat-num">HACS</div><div className="stat-label">compatible</div></div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const App = () => {
+  const [tweaks, setTweak] = useTweaks(HOME_TWEAK_DEFAULTS);
+
+  React.useEffect(() => { applyAccent(tweaks.accent); }, [tweaks.accent]);
+
+  let Hero;
+  if (tweaks.heroVariant === "split") Hero = HeroSplit;
+  else if (tweaks.heroVariant === "terminal") Hero = HeroTerminal;
+  else Hero = HeroStacked;
+
+  return (
+    <>
+      <Nav active="cards" />
+      <Hero />
+
+      <main className="container">
+        <div className="section-head" id="cards">
+          <h2>Cards</h2>
+          <a className="view-all" href="#">View all →</a>
+        </div>
+        <div className="cards-grid">
+          {CARDS.map(c => <CardTile key={c.name} card={c} />)}
+        </div>
+
+        <div className="section-head">
+          <h2>Latest from<br/>the blog</h2>
+          <a className="view-all" href="blog.html">All posts →</a>
+        </div>
+        <div className="blog-list">
+          {POSTS.map(p => (
+            <a key={p.slug} className="blog-row" href={`blog-post.html?slug=${p.slug}`}>
+              <div className="blog-row-meta">
+                <div className="blog-row-title">{p.title}</div>
+                <div className="blog-row-date">{p.date}</div>
+              </div>
+              <span className={`tag ${TAG_CLASSES[p.tag]}`}>{TAG_LABELS[p.tag]}</span>
+            </a>
+          ))}
+        </div>
+      </main>
+
+      <Footer />
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection title="Hero layout">
+          <TweakRadio
+            value={tweaks.heroVariant}
+            onChange={v => setTweak("heroVariant", v)}
+            options={[
+              { value: "stacked", label: "Stacked" },
+              { value: "split", label: "Split" },
+              { value: "terminal", label: "Terminal" },
+            ]}
+          />
+        </TweakSection>
+        <TweakSection title="Accent colour">
+          <TweakRadio
+            value={tweaks.accent}
+            onChange={v => setTweak("accent", v)}
+            options={[
+              { value: "blue", label: "Blue" },
+              { value: "violet", label: "Violet" },
+              { value: "cyan", label: "Cyan" },
+              { value: "amber", label: "Amber" },
+            ]}
+          />
+        </TweakSection>
+      </TweaksPanel>
+    </>
+  );
+};
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
