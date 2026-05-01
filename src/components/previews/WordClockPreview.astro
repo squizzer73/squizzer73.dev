@@ -96,14 +96,15 @@ const GRID = [
     else if (min === 50) { mark('TEN_M');  mark('TO'); }
     else if (min === 55) { mark('FIVE_M'); mark('TO'); }
 
-    mark(HOUR_KEYS[displayHour]!);
+    const hourKey = HOUR_KEYS[displayHour];
+    if (hourKey) mark(hourKey);
     return lit;
   }
 
   function updateClocks(): void {
     const lit = wordClockLit(new Date());
     document.querySelectorAll<HTMLElement>('.wc-letter[data-pos]').forEach(el => {
-      el.classList.toggle('wc-lit', lit.has(el.dataset.pos!));
+      el.classList.toggle('wc-lit', lit.has(el.dataset.pos ?? ''));
     });
   }
 

@@ -11,12 +11,13 @@ const rooms = [
   { name: 'Office',   demand: 91, temp: '17.8°' },
   { name: 'Kitchen',  demand: 12, temp: '20.1°' },
 ];
+const avg = Math.round(rooms.reduce((s, r) => s + r.demand, 0) / rooms.length);
 ---
 
 <div class={`hd-preview${isHero ? ' hd-hero' : ''}`}>
   <div class="hd-head">
     <span class="hd-title">Heat demand</span>
-    <span class="hd-status mono">62% avg</span>
+    <span class="hd-status mono">{avg}% avg</span>
   </div>
   <div class="hd-rows">
     {rooms.map(r => (
