@@ -1,8 +1,8 @@
 ---
 interface Props {
-  active?: 'cards' | 'blog' | 'about';
+  activeNav?: 'cards' | 'blog' | 'about';
 }
-const { active } = Astro.props;
+const { activeNav } = Astro.props;
 ---
 
 <nav class="nav">
@@ -15,9 +15,9 @@ const { active } = Astro.props;
       </span>
     </a>
     <div class="nav-links">
-      <a href="/#cards" class={active === 'cards' ? 'active' : ''}>cards</a>
-      <a href="/blog/" class={active === 'blog' ? 'active' : ''}>blog</a>
-      <a href="/#about" class={active === 'about' ? 'active' : ''}>about</a>
+      <a href="/#cards" class={activeNav === 'cards' ? 'active' : ''}>cards</a>
+      <a href="/blog/" class={activeNav === 'blog' ? 'active' : ''}>blog</a>
+      <a href="/#about" class={activeNav === 'about' ? 'active' : ''}>about</a>
     </div>
     <a
       class="gh-btn"
