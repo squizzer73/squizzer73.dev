@@ -455,3 +455,14 @@ pre.code, .code-block {
   .hero.hero-split { grid-template-columns: 1fr; gap: 32px; }
   .stats { gap: 32px; }
 }
+
+@media (max-width: 640px) {
+  .container { padding: 0 20px; }
+  .logo-tag { display: none; }
+  .nav-inner { height: 72px; gap: 16px; }
+  .gh-btn { display: none; }
+  .nav-links { gap: 20px; }
+  .hero h1 { font-size: 26px; }
+  .hero.hero-split { padding: 40px 0 32px; }
+  .stats { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+}

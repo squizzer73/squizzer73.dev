@@ -12,7 +12,7 @@ interface Props {
 const { rows } = Astro.props;
 ---
 
-<table class="config-table">
+<div class="config-table-wrap"><table class="config-table">
   <thead>
     <tr>
       <th>Option</th>
@@ -36,4 +36,4 @@ const { rows } = Astro.props;
       </tr>
     ))}
   </tbody>
-</table>
+</table></div>
