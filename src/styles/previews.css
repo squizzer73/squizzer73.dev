@@ -305,3 +305,90 @@
 }
 .hd-hero .hd-bar { height: 8px; }
 .hd-hero .hd-temp { font-size: 13px; }
+
+/* ============= PERSON CARD PREVIEW ============= */
+.pc-preview {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+.pc-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #1b2e1b;
+  border: 1px solid #76c442;
+  border-radius: 8px;
+  padding: 10px;
+  width: 100%;
+  box-shadow: 0 0 12px rgba(118,196,66,0.15);
+}
+.pc-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #0d1117;
+  border: 2px solid #76c442;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: #76c442;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(118,196,66,0.3);
+}
+.pc-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pc-name { font-size: 10px; font-weight: 600; color: var(--text); }
+.pc-zone { display: flex; align-items: center; gap: 4px; }
+.pc-zone-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #76c442;
+  flex-shrink: 0;
+}
+.pc-zone-label { font-size: 8px; color: #76c442; font-weight: 500; }
+.pc-devices { display: flex; flex-direction: column; gap: 3px; margin-top: 2px; }
+.pc-device {
+  display: grid;
+  grid-template-columns: 36px 1fr 24px 8px;
+  gap: 4px;
+  align-items: center;
+}
+.pc-device-name {
+  font-size: 7px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pc-bat-bar { height: 3px; background: #21262d; border-radius: 999px; overflow: hidden; }
+.pc-bat-fill { height: 100%; background: #3fb950; border-radius: 999px; }
+.pc-bat-fill.low { background: #f78166; }
+.pc-bat-pct { font-size: 7px; color: var(--text-muted); text-align: right; }
+.pc-conn { width: 5px; height: 5px; border-radius: 50%; background: #3fb950; }
+.pc-conn.offline { background: #f78166; }
+.pc-last-seen { font-size: 7px; color: var(--text-muted); margin-top: 2px; }
+
+.pc-hero { padding: 20px; }
+.pc-hero .pc-card { gap: 16px; padding: 16px; border-radius: 12px; }
+.pc-hero .pc-avatar { width: 52px; height: 52px; font-size: 14px; }
+.pc-hero .pc-name { font-size: 16px; }
+.pc-hero .pc-zone-dot { width: 7px; height: 7px; }
+.pc-hero .pc-zone-label { font-size: 12px; }
+.pc-hero .pc-device { grid-template-columns: 60px 1fr 36px 10px; gap: 8px; }
+.pc-hero .pc-device-name { font-size: 11px; }
+.pc-hero .pc-bat-bar { height: 5px; }
+.pc-hero .pc-bat-pct { font-size: 11px; }
+.pc-hero .pc-conn { width: 8px; height: 8px; }
+.pc-hero .pc-last-seen { font-size: 11px; margin-top: 6px; }

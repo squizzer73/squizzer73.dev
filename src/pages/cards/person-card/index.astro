@@ -1,0 +1,205 @@
+---
+import Base from '../../../layouts/Base.astro';
+import PersonCardPreview from '../../../components/previews/PersonCardPreview.astro';
+import InstallTabs from '../../../components/card-detail/InstallTabs.astro';
+import ConfigTable from '../../../components/card-detail/ConfigTable.astro';
+import Changelog from '../../../components/card-detail/Changelog.astro';
+import '../../../styles/card-detail.css';
+
+const configRows = [
+  { option: 'type',               type: 'string',  default: '',     required: true,  description: 'Always <code>custom:person-card</code> (or <code>family-card</code>, <code>family-grid-card</code>, <code>person-card-theme</code>).' },
+  { option: 'person_entity',      type: 'string',  default: '',     required: true,  description: '<code>person.*</code> entity ID to display.' },
+  { option: 'size',               type: 'string',  default: 'auto', required: false, description: 'Size tier: <code>auto</code> · <code>small</code> · <code>medium</code> · <code>large</code> · <code>hero</code> · <code>stats</code>. Auto scales live via ResizeObserver.' },
+  { option: 'zone_styles',        type: 'list',    default: '[]',   required: false, description: 'Per-zone colour, icon, and label overrides. Use the Appearance tab or Auto-detect zones from HA button in the editor.' },
+  { option: 'devices',            type: 'list',    default: '[]',   required: false, description: 'Tracked devices. Each entry takes <code>entity</code>, <code>battery_entity</code>, <code>connectivity_entity</code>, and optional <code>battery_threshold</code>.' },
+  { option: 'show_last_seen',     type: 'boolean', default: 'true', required: false, description: 'Show last-seen timestamp (large and hero sizes).' },
+  { option: 'address_entity',     type: 'string',  default: '',     required: false, description: 'Geocoded address sensor. Shown when the person is outside all defined zones; long strings use a scrolling ticker.' },
+  { option: 'offline_threshold',  type: 'number',  default: '',     required: false, description: 'Minutes without an update before the avatar is marked stale. Avatar dims and a clock badge appears.' },
+  { option: 'conditions',         type: 'list',    default: '[]',   required: false, description: 'AND/OR condition rules that change background, border, and notification badge based on any HA entity state.' },
+];
+
+const changelogEntries = [
+  {
+    version: 'v0.7.1',
+    date: '28 Apr 2026',
+    notes: [
+      'Family Grid Card bundled into person-card.js — no separate resource file needed.',
+      'Fix: family-grid-card was missing from the HACS-registered bundle.',
+    ],
+  },
+  {
+    version: 'v0.7.0',
+    date: '28 Apr 2026',
+    notes: [
+      'Added Family Grid Card — animated grid of glowing avatar tiles.',
+      'Rings breathe slowly for people at home, pulse faster for everyone away.',
+      'Configurable 1–6 column grid; optional "X home · Y away" header.',
+    ],
+  },
+  {
+    version: 'v0.6.0',
+    date: '16 Apr 2026',
+    notes: [
+      'Added five card themes: glass, sci-fi, steampunk, terminal, neon.',
+      'Zone colours from the Theme Card drive accent and glow colours inside each theme.',
+      'Selectable per-card via the Display tab — no migration required.',
+    ],
+  },
+];
+---
+
+<Base
+  title="Person card — squizzer73.dev"
+  description="A bold, at-a-glance person status card for Home Assistant Lovelace dashboards. Four cards in one package: Person, Family, Family Grid, and Theme."
+  activeNav="cards"
+>
+  <main class="container detail">
+    <!-- Breadcrumbs -->
+    <div class="crumbs">
+      <a href="/#cards">cards</a>
+      <span class="sep">/</span>
+      <span class="mono">person-card</span>
+    </div>
+
+    <!-- Detail head -->
+    <div class="detail-head">
+      <div>
+        <h1>Person card</h1>
+        <p class="desc">
+          A bold, at-a-glance person status card for Home Assistant Lovelace dashboards.
+          Four cards in one package — Person, Family, Family Grid, and Theme — with a full
+          visual editor and no YAML required.
+        </p>
+        <div class="detail-head-meta">
+          <span class="tag tag-version">v0.7.1</span>
+          <span>·</span>
+          <span>HACS compatible</span>
+          <span class="dot">·</span>
+          <span>HA 2024.4+</span>
+          <span class="dot">·</span>
+          <span>MIT</span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <a class="btn" href="https://github.com/squizzer73/lovelace-person-card" target="_blank" rel="noreferrer">View on GitHub</a>
+        <a class="btn btn-primary" href="#install">Install →</a>
+      </div>
+    </div>
+
+    <!-- Demo frame -->
+    <div class="demo-frame">
+      <div class="demo-frame-bar">
+        <div class="demo-frame-bar-left">
+          <span class="demo-live-dot" />
+          <span>Person card · Forest Walk theme</span>
+        </div>
+      </div>
+      <div class="demo-stage">
+        <PersonCardPreview size="hero" />
+      </div>
+    </div>
+
+    <!-- Two-column grid -->
+    <div class="detail-grid">
+      <div>
+        <!-- Features -->
+        <section>
+          <h2>Features</h2>
+          <ul class="features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Four cards in one package.
+                <span class="muted">Person, Family, Family Grid, and Theme — all registered from a single JS file.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Five size tiers with adaptive auto mode.
+                <span class="muted">Small, medium, large, hero, and stats — or let ResizeObserver pick automatically.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Zone-based styling with one-click auto-detect from HA.
+                <span class="muted">Custom background, border, icon, and label per zone. Reads your zone.* entities automatically.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Per-device battery bars and connectivity dots.
+                <span class="muted">Colour-coded bars with configurable low-battery thresholds per device.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Family Grid Card with animated breathing glow rings.
+                <span class="muted">Home members pulse slowly; everyone else pulses faster to draw the eye.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Full GUI editor — no YAML required.
+                <span class="muted">Live card picker preview with real HA entities. Five tabs per card.</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Install -->
+        <section id="install">
+          <h2>Install</h2>
+          <InstallTabs
+            repo="squizzer73/lovelace-person-card"
+            cardName="person-card"
+            filename="person-card.js"
+          />
+        </section>
+
+        <!-- Configuration -->
+        <section>
+          <h2>Configuration</h2>
+          <ConfigTable rows={configRows} />
+        </section>
+
+        <!-- Changelog -->
+        <section>
+          <h2>Changelog</h2>
+          <Changelog entries={changelogEntries} />
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="detail-sidebar">
+        <div class="sidebar-block">
+          <h3>At a glance</h3>
+          <div class="sidebar-row"><span class="label">Latest</span><span class="val">v0.7.1</span></div>
+          <div class="sidebar-row"><span class="label">Released</span><span class="val">28 Apr 2026</span></div>
+          <div class="sidebar-row"><span class="label">Min HA</span><span class="val">2024.4</span></div>
+          <div class="sidebar-row"><span class="label">Cards</span><span class="val">4 in 1</span></div>
+          <div class="sidebar-row"><span class="label">License</span><span class="val">MIT</span></div>
+        </div>
+        <div class="sidebar-block">
+          <h3>Links</h3>
+          <div class="sidebar-row">
+            <span class="label">Repo</span>
+            <a class="val" href="https://github.com/squizzer73/lovelace-person-card" target="_blank" rel="noreferrer">github ↗</a>
+          </div>
+          <div class="sidebar-row">
+            <span class="label">Issues</span>
+            <a class="val" href="https://github.com/squizzer73/lovelace-person-card/issues" target="_blank" rel="noreferrer">tracker ↗</a>
+          </div>
+          <div class="sidebar-row">
+            <span class="label">Releases</span>
+            <a class="val" href="https://github.com/squizzer73/lovelace-person-card/releases" target="_blank" rel="noreferrer">all ↗</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</Base>

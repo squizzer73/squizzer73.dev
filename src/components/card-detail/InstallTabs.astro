@@ -1,4 +1,16 @@
 ---
+interface Props {
+  repo?: string;
+  cardName?: string;
+  filename?: string;
+}
+const {
+  repo     = 'squizzer73/calendar-events-card',
+  cardName = 'calendar-events-card',
+  filename = 'calendar-events-card.js',
+} = Astro.props;
+const repoUrl = `https://github.com/${repo}`;
+const resourceLine = `url: /local/${filename}\ntype: module`;
 ---
 
 <div>
@@ -14,15 +26,15 @@
       <div>
         Open HACS → Frontend → Custom repositories. Add this URL as type <code>Lovelace</code>:
         <div class="copyable" style="margin-top: 10px;">
-          <pre class="code-block">https://github.com/squizzer73/calendar-events-card</pre>
-          <button class="copy-btn mono" data-copy="https://github.com/squizzer73/calendar-events-card">copy</button>
+          <pre class="code-block">{repoUrl}</pre>
+          <button class="copy-btn mono" data-copy={repoUrl}>copy</button>
         </div>
       </div>
     </div>
     <div class="install-step">
       <div class="install-step-num mono">02</div>
       <div>
-        Install <code>calendar-events-card</code>, then add the resource to your Lovelace config
+        Install <code>{cardName}</code>, then add the resource to your Lovelace config
         (HACS handles this on most setups).
       </div>
     </div>
@@ -43,7 +55,7 @@
     <div class="install-step">
       <div class="install-step-num mono">01</div>
       <div>
-        Download <code>calendar-events-card.js</code> from the latest release and place it
+        Download <code>{filename}</code> from the latest release and place it
         under <code>/config/www/</code>.
       </div>
     </div>
@@ -52,10 +64,8 @@
       <div>
         Add the resource (Settings → Dashboards → ⋮ → Resources):
         <div class="copyable" style="margin-top: 10px;">
-          <pre class="code-block">url: /local/calendar-events-card.js
-type: module</pre>
-          <button class="copy-btn mono" data-copy="url: /local/calendar-events-card.js
-type: module">copy</button>
+          <pre class="code-block">{resourceLine}</pre>
+          <button class="copy-btn mono" data-copy={resourceLine}>copy</button>
         </div>
       </div>
     </div>

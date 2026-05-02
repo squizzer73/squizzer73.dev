@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import CardTile from '../components/CardTile.astro';
+import PersonCardPreview from '../components/previews/PersonCardPreview.astro';
 import WordClockPreview from '../components/previews/WordClockPreview.astro';
 import CalendarPreview from '../components/previews/CalendarPreview.astro';
 import HeatDemandPreview from '../components/previews/HeatDemandPreview.astro';
@@ -75,14 +76,14 @@ function formatDate(d: Date): string {
         <CalendarPreview size="tile" />
       </CardTile>
       <CardTile
-        name="Word clock card"
-        desc="11×10 English word grid with ResizeObserver auto-scaling. Always fits."
-        filename="word-clock-card.js"
-        versionTag="new"
-        tagKind="new"
-        detailUrl="#word-clock"
+        name="Person card"
+        desc="Four cards in one: Person, Family, Family Grid, and Theme. Full GUI editor, no YAML required."
+        filename="person-card.js"
+        versionTag="v0.7.1"
+        tagKind="version"
+        detailUrl="/cards/person-card/"
       >
-        <WordClockPreview size="tile" />
+        <PersonCardPreview size="tile" />
       </CardTile>
       <CardTile
         name="Heat demand card"

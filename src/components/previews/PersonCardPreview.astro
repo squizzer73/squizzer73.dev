@@ -1,0 +1,38 @@
+---
+interface Props {
+  size?: 'tile' | 'hero';
+}
+const { size = 'tile' } = Astro.props;
+const isHero = size === 'hero';
+
+const devices = [
+  { name: 'iPhone',  bat: 82, online: true },
+  { name: 'MacBook', bat: 34, online: true },
+];
+---
+
+<div class={`pc-preview${isHero ? ' pc-hero' : ''}`}>
+  <div class="pc-card">
+    <div class="pc-avatar">MS</div>
+    <div class="pc-info">
+      <div class="pc-name">Mark</div>
+      <div class="pc-zone">
+        <span class="pc-zone-dot"></span>
+        <span class="pc-zone-label">Home</span>
+      </div>
+      <div class="pc-devices">
+        {devices.map(d => (
+          <div class="pc-device">
+            <span class="pc-device-name">{d.name}</span>
+            <div class="pc-bat-bar">
+              <div class={`pc-bat-fill${d.bat <= 20 ? ' low' : ''}`} style={`width:${d.bat}%`} />
+            </div>
+            <span class="pc-bat-pct mono">{d.bat}%</span>
+            <span class={`pc-conn${d.online ? '' : ' offline'}`} />
+          </div>
+        ))}
+      </div>
+      {isHero && <div class="pc-last-seen mono">last seen 2 min ago</div>}
+    </div>
+  </div>
+</div>
