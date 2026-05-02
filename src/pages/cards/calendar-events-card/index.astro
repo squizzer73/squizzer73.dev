@@ -1,0 +1,203 @@
+---
+import Base from '../../../layouts/Base.astro';
+import CalendarPreview from '../../../components/previews/CalendarPreview.astro';
+import InstallTabs from '../../../components/card-detail/InstallTabs.astro';
+import ConfigTable from '../../../components/card-detail/ConfigTable.astro';
+import Changelog from '../../../components/card-detail/Changelog.astro';
+import '../../../styles/card-detail.css';
+
+const configRows = [
+  { option: 'type',       type: 'string', default: '',     required: true,  description: 'Always <code>custom:calendar-events-card</code>.' },
+  { option: 'entities',   type: 'list',   default: '',     required: true,  description: 'List of <code>calendar.*</code> entities to display.' },
+  { option: 'view',       type: 'string', default: 'month',required: false, description: 'One of <code>month</code>, <code>agenda</code>, <code>compact</code>.' },
+  { option: 'days_ahead', type: 'number', default: '14',   required: false, description: 'How many days the agenda view looks forward.' },
+  { option: 'colors',     type: 'map',    default: '',     required: false, description: 'Per-entity hex colour override. Defaults to the auto palette.' },
+  { option: 'title',      type: 'string', default: '',     required: false, description: 'Card header. Omit to hide.' },
+];
+
+const changelogEntries = [
+  {
+    version: 'v1.2',
+    date: '21 Apr 2026',
+    notes: [
+      'Auto-scaling text on the events list — never overflows again.',
+      'Visual editor: drag to reorder calendars, set per-calendar colour.',
+      'Fix: time zone offset on all-day events spanning DST.',
+    ],
+  },
+  {
+    version: 'v1.1',
+    date: '08 Apr 2026',
+    notes: [
+      'Multi-calendar support with stable colour mapping.',
+      'Compact mode for small Lovelace tiles.',
+      'Fix: today highlight off-by-one when locale week starts on Sunday.',
+    ],
+  },
+  {
+    version: 'v1.0',
+    date: '29 Mar 2026',
+    notes: [
+      'Initial public release.',
+      'Month grid + agenda list.',
+      'HACS-compatible packaging.',
+    ],
+  },
+];
+---
+
+<Base
+  title="Calendar events card — squizzer73.dev"
+  description="A multi-calendar Lovelace card with auto-scaling text, visual editor, and stable colour mapping."
+  activeNav="cards"
+>
+  <main class="container detail">
+    <!-- Breadcrumbs -->
+    <div class="crumbs">
+      <a href="/#cards">cards</a>
+      <span class="sep">/</span>
+      <span class="mono">calendar-events-card</span>
+    </div>
+
+    <!-- Detail head -->
+    <div class="detail-head">
+      <div>
+        <h1>Calendar events card</h1>
+        <p class="desc">
+          A multi-calendar Lovelace card with auto-scaling text, a visual editor, and stable colour
+          mapping. Built because the default calendar card was a single-calendar wall of grey text.
+        </p>
+        <div class="detail-head-meta">
+          <span class="tag tag-version">v1.2</span>
+          <span>·</span>
+          <span>HACS compatible</span>
+          <span class="dot">·</span>
+          <span>HA 2024.4+</span>
+          <span class="dot">·</span>
+          <span>MIT</span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <a class="btn" href="https://github.com/squizzer73/calendar-events-card" target="_blank" rel="noreferrer">View on GitHub</a>
+        <a class="btn btn-primary" href="#install">Install →</a>
+      </div>
+    </div>
+
+    <!-- Demo frame -->
+    <div class="demo-frame">
+      <div class="demo-frame-bar">
+        <div class="demo-frame-bar-left">
+          <span class="demo-live-dot" />
+          <span>Live demo · April 2026 data</span>
+        </div>
+        <div class="demo-frame-controls">
+          <button class="demo-tab active">month</button>
+          <button class="demo-tab">agenda</button>
+          <button class="demo-tab">compact</button>
+        </div>
+      </div>
+      <div class="demo-stage">
+        <CalendarPreview size="hero" />
+      </div>
+    </div>
+
+    <!-- Two-column grid -->
+    <div class="detail-grid">
+      <div>
+        <!-- Features -->
+        <section>
+          <h2>Features</h2>
+          <ul class="features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Multi-calendar overlay with stable per-calendar colour mapping.
+                <span class="muted">Configure once, colours stick across reloads.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Auto-scaling text via ResizeObserver.
+                <span class="muted">Looks right at any tile size, from full-width to 1×1.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Three views: month grid, agenda list, compact strip.
+                <span class="muted">Switch in YAML or via the visual editor.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Visual editor with drag-reorder for calendars.
+                <span class="muted">No YAML required, but every option still YAML-configurable.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                All-day events handled correctly across DST and timezones.
+                <span class="muted">Yes, this took two rewrites.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Keyboard navigable, screen-reader friendly.
+                <span class="muted">aria-live region for upcoming events.</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Install -->
+        <section id="install">
+          <h2>Install</h2>
+          <InstallTabs />
+        </section>
+
+        <!-- Configuration -->
+        <section>
+          <h2>Configuration</h2>
+          <ConfigTable rows={configRows} />
+        </section>
+
+        <!-- Changelog -->
+        <section>
+          <h2>Changelog</h2>
+          <Changelog entries={changelogEntries} />
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="detail-sidebar">
+        <div class="sidebar-block">
+          <h3>At a glance</h3>
+          <div class="sidebar-row"><span class="label">Latest</span><span class="val">v1.2</span></div>
+          <div class="sidebar-row"><span class="label">Released</span><span class="val">21 Apr 2026</span></div>
+          <div class="sidebar-row"><span class="label">Min HA</span><span class="val">2024.4</span></div>
+          <div class="sidebar-row"><span class="label">Size</span><span class="val">28 kB</span></div>
+          <div class="sidebar-row"><span class="label">License</span><span class="val">MIT</span></div>
+        </div>
+        <div class="sidebar-block">
+          <h3>Links</h3>
+          <div class="sidebar-row">
+            <span class="label">Repo</span>
+            <a class="val" href="https://github.com/squizzer73/calendar-events-card" target="_blank" rel="noreferrer">github ↗</a>
+          </div>
+          <div class="sidebar-row">
+            <span class="label">Issues</span>
+            <a class="val" href="https://github.com/squizzer73/calendar-events-card/issues" target="_blank" rel="noreferrer">tracker ↗</a>
+          </div>
+          <div class="sidebar-row">
+            <span class="label">Releases</span>
+            <a class="val" href="https://github.com/squizzer73/calendar-events-card/releases" target="_blank" rel="noreferrer">all ↗</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</Base>
