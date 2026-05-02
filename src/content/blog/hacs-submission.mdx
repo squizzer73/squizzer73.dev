@@ -1,0 +1,11 @@
+---
+title: "Getting a custom card accepted into HACS"
+date: 2026-03-10
+tags: ["ha"]
+excerpt: "The HACS submission checklist is longer than it looks. Here is what caught me out and how to get through the review without back-and-forth."
+readTime: "4 min read"
+---
+
+HACS requires a specific repo structure, a `hacs.json` manifest, proper semantic versioning via GitHub releases, and a `README.md` that meets their template requirements. None of this is hard, but missing any one item sends your submission back to the queue.
+
+The review that tripped me up most was the info card — HACS pulls a preview from your README and renders it in their frontend. Images need to be absolute URLs to raw GitHub content, not relative paths. Took two submissions to spot that one.

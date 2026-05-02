@@ -1,0 +1,11 @@
+---
+title: "Building a word clock card with ResizeObserver"
+date: 2026-03-20
+tags: ["build"]
+excerpt: "An 11×10 letter grid that shows the time in English. The challenge was making it fit any tile size without JavaScript-driven font sizing."
+readTime: "4 min read"
+---
+
+The word clock concept is simple: a fixed grid of letters, some lit up to spell the current time in plain English. The implementation problem is making it responsive — the grid needs to fill any tile size, from a narrow sidebar slot to a full-width panel.
+
+CSS grid with `1fr` columns handles the layout. The letter size scales with the container via `clamp()` and a container query. ResizeObserver fires when the tile is resized and updates a CSS custom property that the font size reads from.

@@ -1,0 +1,13 @@
+---
+title: "Building a TRV heat demand aggregator in Home Assistant"
+date: 2026-04-28
+tags: ["ha"]
+excerpt: "TRVs report valve position, not demand. Here is how I built a sensor that aggregates per-room heat demand into something the boiler can act on."
+readTime: "6 min read"
+---
+
+Home Assistant gives you a valve position per TRV but nothing that tells the boiler how hard to work. This post walks through a template sensor that computes a weighted heat demand score across every room.
+
+The core formula weights each room by its valve open percentage, adjusted by how far it is from the target temperature. Rooms that are cold and wide open count more than rooms that are slightly below setpoint with a narrow opening.
+
+Once the sensor was in place, the next step was wiring it to the boiler via a Shelly switch and a simple automation — fire when demand crosses a threshold, kill when it drops back. The result is a boiler that cycles less and heats more efficiently.

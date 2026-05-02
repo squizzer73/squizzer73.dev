@@ -1,0 +1,11 @@
+---
+title: "Home Assistant entities, devices, and areas — what actually matters"
+date: 2026-02-28
+tags: ["ha"]
+excerpt: "Three concepts that beginners conflate and experts take for granted. Getting this mental model right makes everything else click."
+readTime: "3 min read"
+---
+
+A device is a physical thing — a Shelly relay, a TRV, a Zigbee bulb. An entity is one measurable or controllable property of that device — a switch entity, a temperature sensor entity, a brightness entity. A device can have dozens of entities. An area is just a label you assign to group devices and entities by room.
+
+The confusion usually comes from the fact that simple devices — a single-relay switch, a basic motion sensor — have one entity each, so the device/entity distinction feels academic. It stops being academic when you add a TRV with seven entities (valve position, setpoint, battery, HVAC mode, current temp, link quality, last seen) and need to build an automation that only cares about two of them.

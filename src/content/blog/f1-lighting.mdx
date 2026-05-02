@@ -1,0 +1,13 @@
+---
+title: "F1 race status lighting with Govee and govee2mqtt"
+date: 2026-04-02
+tags: ["auto"]
+excerpt: "Race status from a public API, piped through MQTT, mapped to Govee light effects. The lights go green on race start, safety-car yellow on VSC, and red on a red flag."
+readTime: "5 min read"
+---
+
+The F1 calendar integration in Home Assistant gives you session state — but only after a delay and without fine-grained race status. This post covers a small Node-RED flow that polls a public F1 status API every 30 seconds and maps race conditions to Govee light modes via govee2mqtt.
+
+Green means go. Yellow means virtual safety car or safety car. Red means red flag or session stopped. The lights update within 30 seconds of the actual on-track event.
+
+The trickiest part was handling the transition from qualifying to race day — the session entity changes ID between sessions, so the automation needed a template to resolve the current session entity dynamically.

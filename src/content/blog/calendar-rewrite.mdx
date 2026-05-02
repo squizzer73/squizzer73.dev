@@ -1,0 +1,101 @@
+---
+title: "Why I rewrote the calendar card from scratch (twice)"
+date: 2026-04-14
+tags: ["build"]
+excerpt: "The first rewrite fixed the layout. The second fixed time zones. Here is what I learned about building Lovelace cards that actually handle real calendar data."
+readTime: "8 min read"
+---
+
+The default Home Assistant calendar card is fine if you have one calendar, you only care about today, and you size your tile exactly the way the original author imagined. Three calendars and a 2×1 footprint? It falls apart. So I rewrote it. And then I rewrote it again. This is a post about the failure modes I discovered in between, because I think they're useful.
+
+## The first attempt: a thin wrapper
+
+The original calendar card renders an agenda list. My naive plan was to keep that rendering and just add multi-calendar support on top. Pull events from N entities, dedupe, sort, hand the list back to the existing renderer. About a hundred lines of code.
+
+It worked. It also looked terrible. The renderer assumed events came from one source and styled them with a single colour. My "wrap it" approach meant I either monkey-patched the renderer (fragile) or post-processed the rendered DOM to recolour event chips (also fragile, and the recolour ran *after* Lovelace's animation, so events would flash one colour then snap to another). I shipped it for a week and then took it down.
+
+```js
+// v0.1 — the bad idea, simplified
+class CalendarEventsCard extends LitElement {
+  render() {
+    const events = this.config.entities.flatMap(
+      e => this.hass.states[e].attributes.events || []
+    );
+    return html`<hui-calendar-card
+      .events=${events}
+    ></hui-calendar-card>`;
+  }
+}
+```
+
+`hui-calendar-card` is a private component. Reading from `this.hass.states[...].attributes.events` only works if the calendar integration happens to populate that attribute on every refresh, which most don't. I was reaching into HA's private API and hoping nothing changed. It changed.
+
+## The second attempt: forking the original
+
+So I forked. I copied the official card's source, ripped out the parts I didn't need, and rebuilt the rendering loop. This time I controlled the colour mapping, I called the calendar API directly, and I had a real `config` schema with multi-entity support.
+
+And it still looked bad — but for a different reason. **Auto-scaling.**
+
+The original card uses a fixed font size. At a 4-wide tile that's fine. At a 1-wide tile the date heading wraps, the time-strings overflow, and the event chip sits half off the edge. The CSS-only fix everyone reaches for is `font-size: clamp(...)` based on viewport units. That doesn't work in a Lovelace card, because the card doesn't fill the viewport — it fills whatever cell the layout engine gives it, which depends on the user's grid config and is frequently wrong by a factor of two.
+
+> **The lesson:** in a tile-based dashboard, the card has no idea how big it will be until *after* it's been placed. Any sizing logic that runs in `render()` is too early.
+
+## The third attempt: ResizeObserver
+
+`ResizeObserver` fires when an element's size changes, including the first time it's measured. The pattern is: render the card at a baseline font size, observe the container, and rescale the inner content based on the actual measured width.
+
+```js
+// v1.0 — auto-scaling that actually works
+const BASE_WIDTH = 360;
+const MIN_SCALE = 0.6;
+const MAX_SCALE = 1.4;
+
+class CalendarEventsCard extends LitElement {
+  firstUpdated() {
+    this._ro = new ResizeObserver(([entry]) => {
+      const w = entry.contentRect.width;
+      const scale = Math.max(
+        MIN_SCALE,
+        Math.min(MAX_SCALE, w / BASE_WIDTH)
+      );
+      this.style.setProperty("--cec-scale", scale);
+    });
+    this._ro.observe(this);
+  }
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this._ro?.disconnect();
+  }
+}
+```
+
+With `--cec-scale` exposed as a CSS custom property, every text size in the card becomes `calc(13px * var(--cec-scale))` and the whole layout breathes with the tile size. No more wrapped headings. No more clipped chips. No more guessing.
+
+### The DST gotcha
+
+Once layout was solid, I shipped v1.0 — and immediately got an issue filed about all-day events on the 27th of October showing on the 26th. DST. The events come back as ISO strings with a `Z` suffix; if you parse them with `new Date()` and then call `.toLocaleDateString()`, you get the local date. *Almost.*
+
+All-day events are special. They aren't anchored to a time zone — they're a calendar date, full stop. The 27th of October in your calendar is the 27th of October regardless of where you are. If you treat `2026-10-27T00:00:00Z` as a moment-in-time and convert to local, you will be off by one whenever your local offset is negative at that moment. Which it is, in the UK, exactly during the DST switchover.
+
+```js
+// Parse "all day" events as date-only, never as instants
+function parseEventStart(ev) {
+  if (ev.start.date) {
+    // All-day: "2026-10-27"
+    const [y, m, d] = ev.start.date.split("-").map(Number);
+    return new Date(y, m - 1, d); // local midnight, no offset
+  }
+  return new Date(ev.start.dateTime); // timed event, has offset
+}
+```
+
+## What I'd do differently
+
+- **Start with a config schema, not a render loop.** v0.1 wrapped a renderer; v1.0 starts from "what does the user type into YAML" and builds outward. The second framing is much harder to paint yourself into a corner with.
+- **Don't reach into private HA components.** If you find yourself rendering `hui-*` tags by name, stop. They're private for a reason.
+- **Layout decisions belong in observers, not render.** Lovelace cards are placed, not painted. `ResizeObserver` is the API that respects that.
+- **All-day events are dates, not instants.** If you remember nothing else from this post, remember that.
+
+---
+
+v1.2 just landed with the visual editor and stable colour mapping. [The card detail page has the install instructions and config reference.](/cards/calendar-events-card) Issues, PRs and "you're holding it wrong" tickets all welcome on [the repo](https://github.com/squizzer73/calendar-events-card).
