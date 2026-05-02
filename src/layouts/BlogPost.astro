@@ -1,0 +1,57 @@
+---
+import Base from './Base.astro';
+import '../styles/blog.css';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  tags: string[];
+  readTime: string;
+}
+
+const { title, description, date, tags, readTime } = Astro.props;
+
+const TAG_CLASSES: Record<string, string> = { ha: 'tag-ha', build: 'tag-build', auto: 'tag-auto' };
+const TAG_LABELS: Record<string, string>  = { ha: 'HA', build: 'build log', auto: 'automation' };
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+---
+
+<Base title={`${title} — squizzer73.dev`} description={description} activeNav="blog">
+  <main class="container">
+    <div class="post-crumbs mono">
+      <a href="/blog/">blog</a>
+      <span class="sep">/</span>
+      <span>{title}</span>
+    </div>
+
+    <header class="post-header">
+      <div class="post-header-meta mono">
+        {tags.map(t => (
+          <span class={`tag ${TAG_CLASSES[t] ?? ''}`}>{TAG_LABELS[t] ?? t}</span>
+        ))}
+        <span class="post-meta-sep">·</span>
+        <span class="post-date">{formatDate(date)}</span>
+        <span class="post-meta-sep">·</span>
+        <span class="post-read-time">{readTime}</span>
+      </div>
+      <h1>{title}</h1>
+      <p class="post-lede">{description}</p>
+      <div class="post-author">
+        <div class="post-author-avatar mono">MS</div>
+        <span>Mark Squires</span>
+      </div>
+    </header>
+
+    <article class="post-body">
+      <slot />
+    </article>
+
+    <footer class="post-footer">
+      <a href="/blog/" class="post-back">← All posts</a>
+    </footer>
+  </main>
+</Base>
