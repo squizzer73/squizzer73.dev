@@ -1,0 +1,24 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostFilter from '../../components/blog/PostFilter.astro';
+import { getCollection } from 'astro:content';
+import '../../styles/blog.css';
+
+const posts = await getCollection('blog');
+const sorted = posts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+---
+
+<Base
+  title="Blog — squizzer73.dev"
+  description="Build logs, Home Assistant deep-dives, and automation write-ups."
+  activeNav="blog"
+>
+  <main class="container">
+    <div class="blog-header">
+      <div class="eyebrow" style="margin-bottom: 14px;">BLOG</div>
+      <h1>Build log</h1>
+      <p class="blog-lede">Home Assistant deep-dives, card build logs, and automation write-ups.</p>
+    </div>
+    <PostFilter posts={sorted} />
+  </main>
+</Base>

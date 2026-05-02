@@ -1,0 +1,74 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  posts: CollectionEntry<'blog'>[];
+}
+const { posts } = Astro.props;
+
+const TAG_CLASSES: Record<string, string> = { ha: 'tag-ha', build: 'tag-build', auto: 'tag-auto' };
+const TAG_LABELS: Record<string, string>  = { ha: 'HA', build: 'build log', auto: 'automation' };
+
+const tagCounts: Record<string, number> = { ha: 0, build: 0, auto: 0 };
+for (const p of posts) {
+  for (const t of p.data.tags) {
+    if (t in tagCounts) tagCounts[t]!++;
+  }
+}
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+---
+
+<div class="filter-row">
+  <span class="filter-label mono">FILTER</span>
+  <div class="filter-pills">
+    <button class="filter-pill active" data-filter="all">
+      All <span class="filter-count mono">{posts.length}</span>
+    </button>
+    {Object.entries(tagCounts).map(([tag, count]) => (
+      <button class="filter-pill" data-filter={tag}>
+        {TAG_LABELS[tag]} <span class="filter-count mono">{count}</span>
+      </button>
+    ))}
+  </div>
+</div>
+
+<div class="posts-list" id="posts-list">
+  {posts.map(post => (
+    <a
+      class="post-row"
+      href={`/blog/${post.id}/`}
+      data-tags={post.data.tags.join(',')}
+    >
+      <div class="post-row-date mono">{formatDate(post.data.date)}</div>
+      <div class="post-row-main">
+        <div class="post-row-title">{post.data.title}</div>
+        <p class="post-row-excerpt">{post.data.excerpt}</p>
+      </div>
+      <span class={`tag ${TAG_CLASSES[post.data.tags[0]!] ?? ''}`}>
+        {TAG_LABELS[post.data.tags[0]!] ?? post.data.tags[0]}
+      </span>
+    </a>
+  ))}
+</div>
+
+<script>
+  const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
+  const rows  = document.querySelectorAll<HTMLElement>('.post-row');
+
+  pills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      const filter = pill.dataset.filter ?? 'all';
+
+      pills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+
+      rows.forEach(row => {
+        const tags = row.dataset.tags?.split(',') ?? [];
+        row.hidden = filter !== 'all' && !tags.includes(filter);
+      });
+    });
+  });
+</script>
