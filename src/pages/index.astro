@@ -1,8 +1,119 @@
 ---
 import Base from '../layouts/Base.astro';
+import CardTile from '../components/CardTile.astro';
+import WordClockPreview from '../components/previews/WordClockPreview.astro';
+import CalendarPreview from '../components/previews/CalendarPreview.astro';
+import HeatDemandPreview from '../components/previews/HeatDemandPreview.astro';
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const homePosts = allPosts
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const TAG_CLASSES: Record<string, string> = { ha: 'tag-ha', build: 'tag-build', auto: 'tag-auto' };
+const TAG_LABELS: Record<string, string> = { ha: 'HA', build: 'build log', auto: 'automation' };
+
+function formatDate(d: Date): string {
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
 ---
+
 <Base title="squizzer73.dev — Home Assistant custom cards" activeNav="cards">
-  <main class="container" style="padding: 64px 0;">
-    <h1>Coming soon</h1>
+  <!-- Hero (split variant) -->
+  <section class="hero hero-split container">
+    <div>
+      <div class="hero-eyebrow eyebrow">
+        <span>Home Assistant</span>
+        <span class="sep">·</span>
+        <span>Custom cards</span>
+      </div>
+      <h1>
+        Custom home automation that looks <span class="accent">built on purpose.</span>
+      </h1>
+      <p class="hero-sub">
+        Open-source Home Assistant cards and automations. Technical. Clean. Connected.
+      </p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#cards">Browse cards →</a>
+        <a class="btn" href="https://youtube.com/@squizzer73" target="_blank" rel="noreferrer">Watch on YouTube</a>
+      </div>
+      <div class="stats">
+        <div>
+          <div class="stat-num">3</div>
+          <div class="stat-label">cards released</div>
+        </div>
+        <div>
+          <div class="stat-num">—</div>
+          <div class="stat-label">GitHub stars</div>
+        </div>
+        <div>
+          <div class="stat-num">HACS</div>
+          <div class="stat-label">compatible</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-split-preview">
+      <WordClockPreview size="hero" />
+    </div>
+  </section>
+
+  <main class="container">
+    <!-- Cards section -->
+    <div class="section-head" id="cards">
+      <h2>Cards</h2>
+      <a class="view-all" href="#">View all →</a>
+    </div>
+    <div class="cards-grid">
+      <CardTile
+        name="Calendar events card"
+        desc="Multi-calendar display with auto-scaling text and visual editor support."
+        filename="calendar-events-card.js"
+        versionTag="v1.2"
+        tagKind="version"
+        detailUrl="/cards/calendar-events-card/"
+      >
+        <CalendarPreview size="tile" />
+      </CardTile>
+      <CardTile
+        name="Word clock card"
+        desc="11×10 English word grid with ResizeObserver auto-scaling. Always fits."
+        filename="word-clock-card.js"
+        versionTag="new"
+        tagKind="new"
+        detailUrl="#word-clock"
+      >
+        <WordClockPreview size="tile" />
+      </CardTile>
+      <CardTile
+        name="Heat demand card"
+        desc="Per-room TRV demand visualisation with adaptive thresholds. WIP."
+        filename="heat-demand-card.js"
+        versionTag="wip"
+        tagKind="version"
+        detailUrl="#heat-demand"
+      >
+        <HeatDemandPreview size="tile" />
+      </CardTile>
+    </div>
+
+    <!-- Blog section -->
+    <div class="section-head">
+      <h2>Latest from<br />the blog</h2>
+      <a class="view-all" href="/blog/">All posts →</a>
+    </div>
+    <div class="blog-list">
+      {homePosts.map(post => (
+        <a class="blog-row" href={`/blog/${post.id}/`}>
+          <div class="blog-row-meta">
+            <div class="blog-row-title">{post.data.title}</div>
+            <div class="blog-row-date">{formatDate(post.data.date)}</div>
+          </div>
+          <span class={`tag ${TAG_CLASSES[post.data.tags[0]!] ?? ''}`}>
+            {TAG_LABELS[post.data.tags[0]!] ?? post.data.tags[0]}
+          </span>
+        </a>
+      ))}
+    </div>
   </main>
 </Base>
