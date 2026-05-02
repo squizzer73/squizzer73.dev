@@ -1,0 +1,39 @@
+---
+interface ConfigRow {
+  option: string;
+  type: string;
+  default: string;
+  required: boolean;
+  description: string;
+}
+interface Props {
+  rows: ConfigRow[];
+}
+const { rows } = Astro.props;
+---
+
+<table class="config-table">
+  <thead>
+    <tr>
+      <th>Option</th>
+      <th>Type</th>
+      <th>Default</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    {rows.map(row => (
+      <tr>
+        <td><span class="name">{row.option}</span></td>
+        <td><span class="type">{row.type}</span></td>
+        <td>
+          {row.required
+            ? <span class="req">required</span>
+            : <code>{row.default}</code>
+          }
+        </td>
+        <td set:html={row.description} />
+      </tr>
+    ))}
+  </tbody>
+</table>

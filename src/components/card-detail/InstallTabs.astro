@@ -1,0 +1,98 @@
+---
+---
+
+<div>
+  <div class="install-tabs">
+    <button class="install-tab active" data-tab="hacs">HACS</button>
+    <button class="install-tab" data-tab="manual">Manual</button>
+  </div>
+
+  <div class="install-body" id="install-hacs">
+    <p>One-click install via the Home Assistant Community Store. Updates land automatically.</p>
+    <div class="install-step">
+      <div class="install-step-num mono">01</div>
+      <div>
+        Open HACS → Frontend → Custom repositories. Add this URL as type <code>Lovelace</code>:
+        <div class="copyable" style="margin-top: 10px;">
+          <pre class="code-block">https://github.com/squizzer73/calendar-events-card</pre>
+          <button class="copy-btn mono" data-copy="https://github.com/squizzer73/calendar-events-card">copy</button>
+        </div>
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-step-num mono">02</div>
+      <div>
+        Install <code>calendar-events-card</code>, then add the resource to your Lovelace config
+        (HACS handles this on most setups).
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-step-num mono">03</div>
+      <div>
+        <span>Or hit the badge:</span>
+        <div class="hacs-badge" style="margin-top: 10px; display: inline-flex;">
+          <span class="pill">HACS</span>
+          <span>Open in My Home Assistant</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="install-body" id="install-manual" hidden>
+    <p>Drop the file into your custom panel and register it as a Lovelace resource.</p>
+    <div class="install-step">
+      <div class="install-step-num mono">01</div>
+      <div>
+        Download <code>calendar-events-card.js</code> from the latest release and place it
+        under <code>/config/www/</code>.
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-step-num mono">02</div>
+      <div>
+        Add the resource (Settings → Dashboards → ⋮ → Resources):
+        <div class="copyable" style="margin-top: 10px;">
+          <pre class="code-block">url: /local/calendar-events-card.js
+type: module</pre>
+          <button class="copy-btn mono" data-copy="url: /local/calendar-events-card.js
+type: module">copy</button>
+        </div>
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-step-num mono">03</div>
+      <div>Reload the frontend (Ctrl/Cmd-Shift-R) and add the card from the picker.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Tab switching
+  document.querySelectorAll<HTMLButtonElement>('.install-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.tab ?? 'hacs';
+      document.querySelectorAll('.install-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const hacs   = document.getElementById('install-hacs')!;
+      const manual = document.getElementById('install-manual')!;
+      hacs.hidden   = tab !== 'hacs';
+      manual.hidden = tab !== 'manual';
+    });
+  });
+
+  // Copy buttons
+  document.querySelectorAll<HTMLButtonElement>('.copy-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const text = btn.dataset.copy ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'copied';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'copy';
+          btn.classList.remove('copied');
+        }, 1400);
+      } catch { /* clipboard not available */ }
+    });
+  });
+</script>

@@ -1,0 +1,47 @@
+---
+interface ChangelogEntry {
+  version: string;
+  date: string;
+  notes: string[];
+}
+interface Props {
+  entries: ChangelogEntry[];
+}
+const { entries } = Astro.props;
+---
+
+<div class="changelog">
+  {entries.map((entry, i) => (
+    <div class={`changelog-item${i === 0 ? ' open' : ''}`} data-version={entry.version}>
+      <div class="changelog-header">
+        <div class="changelog-left">
+          <span class="changelog-version mono">{entry.version}</span>
+          <span class="changelog-date mono">{entry.date}</span>
+        </div>
+        <span class="changelog-chevron">
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <path d="M6 4l4 4-4 4"/>
+          </svg>
+        </span>
+      </div>
+      <div class="changelog-body">
+        <ul>
+          {entry.notes.map(note => <li>{note}</li>)}
+        </ul>
+      </div>
+    </div>
+  ))}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.changelog-header').forEach(header => {
+    header.addEventListener('click', () => {
+      const item = header.closest<HTMLElement>('.changelog-item')!;
+      const isOpen = item.classList.contains('open');
+
+      document.querySelectorAll('.changelog-item').forEach(i => i.classList.remove('open'));
+
+      if (!isOpen) item.classList.add('open');
+    });
+  });
+</script>
