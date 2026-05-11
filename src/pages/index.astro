@@ -5,6 +5,7 @@ import PersonCardPreview from '../components/previews/PersonCardPreview.astro';
 import WordClockPreview from '../components/previews/WordClockPreview.astro';
 import CalendarPreview from '../components/previews/CalendarPreview.astro';
 import HeatDemandPreview from '../components/previews/HeatDemandPreview.astro';
+import HouseCardPreview from '../components/previews/HouseCardPreview.astro';
 import { getCollection } from 'astro:content';
 
 const allPosts = await getCollection('blog');
@@ -41,7 +42,7 @@ function formatDate(d: Date): string {
       </div>
       <div class="stats">
         <div>
-          <div class="stat-num">3</div>
+          <div class="stat-num">4</div>
           <div class="stat-label">cards released</div>
         </div>
         <div>
@@ -84,6 +85,16 @@ function formatDate(d: Date): string {
         detailUrl="/cards/person-card/"
       >
         <PersonCardPreview size="tile" />
+      </CardTile>
+      <CardTile
+        name="House card"
+        desc="Visual floorplan card with 3D axonometric dollhouse view, per-room light glow, heatmap overlay, and occupancy indicators."
+        filename="house-card.js"
+        versionTag="v0.2.3"
+        tagKind="version"
+        detailUrl="/cards/house-card/"
+      >
+        <HouseCardPreview size="tile" />
       </CardTile>
       <CardTile
         name="Heat demand card"

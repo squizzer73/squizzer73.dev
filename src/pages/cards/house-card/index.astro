@@ -1,0 +1,222 @@
+---
+import Base from '../../../layouts/Base.astro';
+import HouseCardPreview from '../../../components/previews/HouseCardPreview.astro';
+import InstallTabs from '../../../components/card-detail/InstallTabs.astro';
+import ConfigTable from '../../../components/card-detail/ConfigTable.astro';
+import Changelog from '../../../components/card-detail/Changelog.astro';
+import '../../../styles/card-detail.css';
+
+const configRows = [
+  { option: 'type',          type: 'string',  default: '',       required: true,  description: 'Always <code>custom:house-card</code>.' },
+  { option: 'floors',        type: 'list',    default: '[]',     required: true,  description: 'Array of floor objects. Each floor has <code>name</code>, <code>rooms</code>, and optional <code>grid_cols</code> / <code>grid_rows</code>.' },
+  { option: 'view',          type: 'string',  default: 'axo',    required: false, description: 'Render mode: <code>axo</code> (3D dollhouse) or <code>flat</code> (overhead grid with CSS tilt).' },
+  { option: 'wall_height',   type: 'number',  default: '25',     required: false, description: 'Height of axonometric wall panels in pixels. Lower values give a flatter silhouette.' },
+  { option: 'floor_gap',     type: 'number',  default: '250',    required: false, description: 'Vertical gap between stacked floors in the axonometric view.' },
+  { option: 'sun_entity',    type: 'string',  default: 'sun.sun',required: false, description: 'Entity used for time-of-day ambient theming. Elevation drives warm amber → deep blue shift.' },
+  { option: 'heatmap',       type: 'string',  default: 'off',    required: false, description: 'Thermal overlay mode: <code>off</code> · <code>temperature</code> · <code>humidity</code> · <code>combined</code>.' },
+  { option: 'rooms[].name',  type: 'string',  default: '',       required: true,  description: 'Display name for the room.' },
+  { option: 'rooms[].light', type: 'string',  default: '',       required: false, description: '<code>light.*</code> entity. Room glows with the light\'s actual RGB colour when on.' },
+  { option: 'rooms[].motion',type: 'string',  default: '',       required: false, description: 'Binary sensor for occupancy. Animated person icon appears on trigger; fades out after 7 s.' },
+  { option: 'rooms[].temp',  type: 'string',  default: '',       required: false, description: 'Temperature sensor. Shown on the in-room info card.' },
+  { option: 'rooms[].humid', type: 'string',  default: '',       required: false, description: 'Humidity sensor. Shown on the in-room info card.' },
+  { option: 'rooms[].type',  type: 'string',  default: 'room',   required: false, description: 'Room type for the MDI watermark icon. One of 19 types: <code>bedroom</code> · <code>lounge</code> · <code>kitchen</code> · <code>bathroom</code> · <code>office</code> · <code>garage</code> and more.' },
+];
+
+const changelogEntries = [
+  {
+    version: 'v0.2.3',
+    date: '10 May 2026',
+    notes: [
+      'Axonometric dollhouse view with illuminated wall panels and recessed info cards.',
+      'Sun-based ambient theming — amber at golden hour, deep blue at night.',
+      'TV/wallboard optimised: vw-based clamp() font sizing for legibility across the room.',
+      'Occupancy pulse animation on person icon appearance.',
+      'Multi-floor vertical stacking with configurable floor gap.',
+      'Double-ring floor glow with light\'s actual RGB colour.',
+    ],
+  },
+  {
+    version: 'v0.2.2',
+    date: '8 May 2026',
+    notes: [
+      'Axonometric view Phase 1: perspective SVG projection and wall panels.',
+      'HTTPS SVG filter fix — inline filter:blur() avoids HA base-tag issue.',
+    ],
+  },
+  {
+    version: 'v0.2.0',
+    date: 'May 2026',
+    notes: [
+      'Heatmap thermal overlay: temperature colour ramp and humidity droplets per room.',
+      'Heatmap mode toggle in card header (off / temperature / humidity / combined).',
+    ],
+  },
+  {
+    version: 'v0.1.9',
+    date: 'May 2026',
+    notes: [
+      'Light spill glow driven by rgb_color attribute with 400 ms transition.',
+      'Tap to toggle light, long-press for more-info dialog.',
+      'Room type icons — 19 types with MDI watermark.',
+      'Occupancy watermark with asymmetric fade (0.5 s in, 7 s out).',
+    ],
+  },
+];
+---
+
+<Base
+  title="House card — squizzer73.dev"
+  description="A visual floorplan card for Home Assistant. Draw rooms on a grid, bind entity states, and view your home as a 3D axonometric dollhouse complete with light glow and heatmap overlay."
+  activeNav="cards"
+>
+  <main class="container detail">
+    <!-- Breadcrumbs -->
+    <div class="crumbs">
+      <a href="/#cards">cards</a>
+      <span class="sep">/</span>
+      <span class="mono">house-card</span>
+    </div>
+
+    <!-- Detail head -->
+    <div class="detail-head">
+      <div>
+        <h1>House card</h1>
+        <p class="desc">
+          A visual floorplan card for Home Assistant. Draw rooms on a configurable grid, bind
+          entity states to each room, and view your home as either a flat overhead plan or a
+          <strong>3D axonometric dollhouse</strong> — complete with per-room light glow, occupancy
+          indicators, temperature data, and a thermal heatmap overlay.
+        </p>
+        <div class="detail-head-meta">
+          <span class="tag tag-version">v0.2.3</span>
+          <span>·</span>
+          <span>HACS compatible</span>
+          <span class="dot">·</span>
+          <span>HA 2024.1+</span>
+          <span class="dot">·</span>
+          <span>MIT</span>
+        </div>
+      </div>
+      <div class="detail-actions">
+        <a class="btn" href="https://github.com/squizzer73/lovelace-house-card" target="_blank" rel="noreferrer">View on GitHub</a>
+        <a class="btn btn-primary" href="#install">Install →</a>
+      </div>
+    </div>
+
+    <!-- Demo frame -->
+    <div class="demo-frame">
+      <div class="demo-frame-bar">
+        <div class="demo-frame-bar-left">
+          <span class="demo-live-dot" />
+          <span>House card · axonometric view</span>
+        </div>
+      </div>
+      <div class="demo-stage">
+        <HouseCardPreview size="hero" />
+      </div>
+    </div>
+
+    <!-- Two-column grid -->
+    <div class="detail-grid">
+      <div>
+        <!-- Features -->
+        <section>
+          <h2>Features</h2>
+          <ul class="features">
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                3D axonometric dollhouse view.
+                <span class="muted">Rooms rendered as 3D boxes with illuminated top face and side wall panels. Unlit rooms are dark; lit rooms glow with the light's actual RGB colour.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Flat overhead grid view.
+                <span class="muted">Clean CSS 3D-tilted floor plan with per-room info cards and light spill glow — switchable at runtime.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Multi-floor support.
+                <span class="muted">Floors stack vertically in the dollhouse view with configurable gap. Tab switching in flat mode.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Heatmap thermal overlay.
+                <span class="muted">Colour-ramp temperature overlay and humidity droplets per room. Toggle between off, temperature, humidity, and combined modes.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                Sun-based ambient theming.
+                <span class="muted">Subtle amber tint at golden hour, blue-amber at dusk, deep blue at night — driven by sun.sun elevation.</span>
+              </div>
+            </li>
+            <li>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8l3.5 3.5L13 5"/></svg>
+              <div>
+                TV &amp; wallboard optimised.
+                <span class="muted">All font and icon sizes use vw-based clamp() so text is legible from across the room without manual tuning.</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Install -->
+        <section id="install">
+          <h2>Install</h2>
+          <InstallTabs
+            repo="squizzer73/lovelace-house-card"
+            cardName="house-card"
+            filename="house-card.js"
+          />
+        </section>
+
+        <!-- Configuration -->
+        <section>
+          <h2>Configuration</h2>
+          <ConfigTable rows={configRows} />
+        </section>
+
+        <!-- Changelog -->
+        <section>
+          <h2>Changelog</h2>
+          <Changelog entries={changelogEntries} />
+        </section>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="detail-sidebar">
+        <div class="sidebar-block">
+          <h3>At a glance</h3>
+          <div class="sidebar-row"><span class="label">Latest</span><span class="val">v0.2.3</span></div>
+          <div class="sidebar-row"><span class="label">Released</span><span class="val">10 May 2026</span></div>
+          <div class="sidebar-row"><span class="label">Min HA</span><span class="val">2024.1</span></div>
+          <div class="sidebar-row"><span class="label">Views</span><span class="val">Axo + Flat</span></div>
+          <div class="sidebar-row"><span class="label">License</span><span class="val">MIT</span></div>
+        </div>
+        <div class="sidebar-block">
+          <h3>Links</h3>
+          <div class="sidebar-row">
+            <span class="label">Repo</span>
+            <a class="val" href="https://github.com/squizzer73/lovelace-house-card" target="_blank" rel="noreferrer">github ↗</a>
+          </div>
+          <div class="sidebar-row">
+            <span class="label">Issues</span>
+            <a class="val" href="https://github.com/squizzer73/lovelace-house-card/issues" target="_blank" rel="noreferrer">tracker ↗</a>
+          </div>
+          <div class="sidebar-row">
+            <span class="label">Releases</span>
+            <a class="val" href="https://github.com/squizzer73/lovelace-house-card/releases" target="_blank" rel="noreferrer">all ↗</a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</Base>
