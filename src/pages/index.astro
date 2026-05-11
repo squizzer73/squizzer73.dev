@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro';
 import CardTile from '../components/CardTile.astro';
 import PersonCardPreview from '../components/previews/PersonCardPreview.astro';
 import WordClockPreview from '../components/previews/WordClockPreview.astro';
+import HeroCarousel from '../components/HeroCarousel.astro';
 import CalendarPreview from '../components/previews/CalendarPreview.astro';
 import HeatDemandPreview from '../components/previews/HeatDemandPreview.astro';
 import HouseCardPreview from '../components/previews/HouseCardPreview.astro';
@@ -56,7 +57,7 @@ function formatDate(d: Date): string {
       </div>
     </div>
     <div class="hero-split-preview">
-      <WordClockPreview size="hero" />
+      <HeroCarousel />
     </div>
   </section>
 

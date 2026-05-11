@@ -1,0 +1,133 @@
+---
+import PersonCardPreview from './previews/PersonCardPreview.astro';
+import HouseCardPreview from './previews/HouseCardPreview.astro';
+import WordClockPreview from './previews/WordClockPreview.astro';
+import CalendarPreview from './previews/CalendarPreview.astro';
+import HeatDemandPreview from './previews/HeatDemandPreview.astro';
+---
+
+<div class="hero-carousel" id="hero-carousel">
+  <div class="carousel-track">
+    <div class="carousel-slide active">
+      <PersonCardPreview size="hero" />
+    </div>
+    <div class="carousel-slide">
+      <HouseCardPreview size="hero" />
+    </div>
+    <div class="carousel-slide">
+      <WordClockPreview size="hero" />
+    </div>
+    <div class="carousel-slide">
+      <CalendarPreview size="hero" />
+    </div>
+    <div class="carousel-slide">
+      <HeatDemandPreview size="hero" />
+    </div>
+  </div>
+  <div class="carousel-dots" role="tablist" aria-label="Card previews">
+    <button class="carousel-dot active" aria-label="Person card" aria-selected="true"></button>
+    <button class="carousel-dot" aria-label="House card" aria-selected="false"></button>
+    <button class="carousel-dot" aria-label="Word clock card" aria-selected="false"></button>
+    <button class="carousel-dot" aria-label="Calendar events card" aria-selected="false"></button>
+    <button class="carousel-dot" aria-label="Heat demand card" aria-selected="false"></button>
+  </div>
+</div>
+
+<style>
+  .hero-carousel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+  }
+
+  .carousel-track {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .carousel-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 600ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  .carousel-slide.active {
+    opacity: 1;
+  }
+
+  .carousel-dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    padding-top: 14px;
+    flex-shrink: 0;
+  }
+
+  .carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border-2, #2a3140);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 300ms, transform 200ms;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .carousel-dot:hover {
+    background: var(--text-muted);
+  }
+
+  .carousel-dot.active {
+    background: var(--accent);
+    transform: scale(1.4);
+  }
+</style>
+
+<script>
+  const carousel = document.getElementById('hero-carousel');
+  if (carousel) {
+    const slides = carousel.querySelectorAll<HTMLElement>('.carousel-slide');
+    const dots = carousel.querySelectorAll<HTMLElement>('.carousel-dot');
+    let current = 0;
+    let timer: ReturnType<typeof setInterval>;
+
+    function goTo(index: number): void {
+      slides[current].classList.remove('active');
+      dots[current].classList.remove('active');
+      dots[current].setAttribute('aria-selected', 'false');
+      current = index;
+      slides[current].classList.add('active');
+      dots[current].classList.add('active');
+      dots[current].setAttribute('aria-selected', 'true');
+    }
+
+    function advance(): void {
+      goTo((current + 1) % slides.length);
+    }
+
+    function resetTimer(): void {
+      clearInterval(timer);
+      timer = setInterval(advance, 4000);
+    }
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        goTo(i);
+        resetTimer();
+      });
+    });
+
+    timer = setInterval(advance, 4000);
+  }
+</script>
