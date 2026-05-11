@@ -42,7 +42,7 @@ function formatDate(d: Date): string {
       </div>
       <div class="stats">
         <div>
-          <div class="stat-num">4</div>
+          <div class="stat-num">5</div>
           <div class="stat-label">cards released</div>
         </div>
         <div>
@@ -67,16 +67,6 @@ function formatDate(d: Date): string {
     </div>
     <div class="cards-grid">
       <CardTile
-        name="Calendar events card"
-        desc="Multi-calendar display with auto-scaling text and visual editor support."
-        filename="calendar-events-card.js"
-        versionTag="v1.2"
-        tagKind="version"
-        detailUrl="/cards/calendar-events-card/"
-      >
-        <CalendarPreview size="tile" />
-      </CardTile>
-      <CardTile
         name="Person card"
         desc="Four cards in one: Person, Family, Family Grid, and Theme. Full GUI editor, no YAML required."
         filename="person-card.js"
@@ -95,6 +85,26 @@ function formatDate(d: Date): string {
         detailUrl="/cards/house-card/"
       >
         <HouseCardPreview size="tile" />
+      </CardTile>
+      <CardTile
+        name="Word clock card"
+        desc="An 11×10 letter grid that spells the current time in English. Scales to any tile size via ResizeObserver and container queries."
+        filename="word-clock-card.js"
+        versionTag="beta"
+        tagKind="version"
+        detailUrl="/blog/word-clock-card/"
+      >
+        <WordClockPreview size="tile" />
+      </CardTile>
+      <CardTile
+        name="Calendar events card"
+        desc="Multi-calendar display with auto-scaling text and visual editor support."
+        filename="calendar-events-card.js"
+        versionTag="v1.2"
+        tagKind="version"
+        detailUrl="/cards/calendar-events-card/"
+      >
+        <CalendarPreview size="tile" />
       </CardTile>
       <CardTile
         name="Heat demand card"
